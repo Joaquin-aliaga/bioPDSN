@@ -42,7 +42,7 @@ class bottleneck_IR(Module):
             self.shortcut_layer = MaxPool2d(1,stride)
         else:
             self.shortcut_layer = Sequential(
-                Conv2d(in_channel, depth, kernel_size=1, stride, bias=False), BatchNorm2d(depth)
+                Conv2d(in_channel, depth, kernel_size=1, stride=stride, bias=False), BatchNorm2d(depth)
                 )
         self.res_layer = Sequential(
             BatchNorm2d(in_channel),
@@ -59,7 +59,7 @@ class bottleneck_IR(Module):
 
 class bottleneck_IR_SE(Module):
     def __init__(self, in_channel, depth, stride):
-        super(bottleneck_IR_SE,self).__init__():
+        super(bottleneck_IR_SE,self).__init__()
         if in_channel == depth:
             self.shortcut_layer = MaxPool2d(1, stride)
         else:
@@ -84,8 +84,8 @@ class bottleneck_IR_SE(Module):
 class Bottleneck(namedtuple('Block', ['in_channel','depth','stride'])):
     ''' A named tuple describing a ResNet block.'''
 
-def get_block(in_channel, depth, num_units, stride=2):
-    return [Bottleneck(in_channel, depth, stride=)] + [Bottleneck(depth,depth,1) for i in range(num_units-1)]
+def get_block(in_channel, depth, num_units, stride = 2):
+  return [Bottleneck(in_channel, depth, stride)] + [Bottleneck(depth, depth, 1) for i in range(num_units-1)]
 
 def get_blocks(num_layers):
     if num_layers == 50:
@@ -145,4 +145,53 @@ class Backbone(Module):
         x = self.body(x)
         x = self.output_layer(x)
         return l2_norm(x)
+
+# Arcface Head
+class Arcface(Module):
+    def __init__(self, embedding_size=512, classnum = 51332, s=64., m=0.5):
+        super(Arcface, self).__init__()
+        self.classnum = classnum
+        self.kernel = Parameter(torch.Tensor(embedding_size, classnum))
+        #initial kernel
+        self.kernel.data.uniform_(-1,1).renorm_(2,1,1e-5).mul_(1e5)
+        self.m = m #margin value
+        self.s = s
+        self.cos_m = math.cos(m)
+        self.sin_m = math.sin(m)
+        self.mm = self.sin_m * m
+        self.threshold = math.cos(math.pi - m)
+
+    def forward(self, embeddings, label):
+        # weights norm
+        nB = len(embeddings)
+        kernel_norm = l2_norm(self.kernel, axis=0)
+        # cos(theta+m)
+        cos_theta = torch.mm(embeddings, kernel_norm)
+        cos_theta = cos_theta.clamp(-1,1) #for numerical stability
+        cos_theta_2 = torch.pow(cos_theta, 2)
+        
+#Cosface head 
+class Am_softmax(Module):
+    # implementation of additive margin softmax loss in https://arxiv.org/abs/1801.05599    
+    def __init__(self,embedding_size=512,classnum=51332):
+        super(Am_softmax, self).__init__()
+        self.classnum = classnum
+        self.kernel = Parameter(torch.Tensor(embedding_size,classnum))
+        # initial kernel
+        self.kernel.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
+        self.m = 0.35 # additive margin recommended by the paper
+        self.s = 30. # see normface https://arxiv.org/abs/1704.06369
+    def forward(self,embbedings,label):
+        kernel_norm = l2_norm(self.kernel,axis=0)
+        cos_theta = torch.mm(embbedings,kernel_norm)
+        cos_theta = cos_theta.clamp(-1,1) # for numerical stability
+        phi = cos_theta - self.m
+        label = label.view(-1,1) #size=(B,1)
+        index = cos_theta.data * 0.0 #size=(B,Classnum)
+        index.scatter_(1,label.data.view(-1,1),1)
+        index = index.byte()
+        output = cos_theta * 1.0
+        output[index] = phi[index] #only change the correct predicted output
+        output *= self.s # scale up in order to make softmax work, first introduced in normface
+        return output
 
