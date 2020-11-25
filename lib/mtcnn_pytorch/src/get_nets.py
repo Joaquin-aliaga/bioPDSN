@@ -52,7 +52,7 @@ class PNet(nn.Module):
         self.conv4_1 = nn.Conv2d(32, 2, 1, 1)
         self.conv4_2 = nn.Conv2d(32, 4, 1, 1)
 
-        weights = np.load('mtcnn_pytorch/src/weights/pnet.npy')[()]
+        weights = np.load('lib/mtcnn_pytorch/src/weights/pnet.npy')[()]
         for n, p in self.named_parameters():
             p.data = torch.FloatTensor(weights[n])
 

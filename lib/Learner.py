@@ -1,4 +1,4 @@
-from models.arcface import  Backbone, Arcface, l2_norm
+from lib.models.arcface import  Backbone, Arcface, l2_norm
 import torch
 from torch import optim
 import numpy as np
