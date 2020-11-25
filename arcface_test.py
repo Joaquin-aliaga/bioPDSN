@@ -29,6 +29,7 @@ conf.test_transform = trans.Compose([
 #conf.data_mode = 'emore'
 
 learner = face_learner(conf,inference=True)
+model = learner.model
 model.load_state_dict(torch.load("./weights/model_ir_se50.pth"))
 model.eval()
 print("Modelo cargado correctamente !! wuju")
