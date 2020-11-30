@@ -37,18 +37,18 @@ if __name__ == '__main__':
     #model.eval()
     print("Modelo cargado correctamente !! wuju")
     model.eval()
-    test_transform = trans.Compose([
-                    trans.ToTensor(),
-                    trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    #test_transform = trans.Compose([
+    #                trans.ToTensor(),
+    #                trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
     img_name = "/enr_1247347.png"
     img = Image.open(args.images_path+img_name)
-    face = mtcnn(img)
-    img = test_transform(face.numpy())
+    img = mtcnn(img)
+    #img = test_transform(face.numpy())
     #print("Input shape: ",img.shape)
-    #feat,emb = model(test_transform(face).unsqueeze(0))
+    feat,emb = model(img)
     #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
                 
-    #print("Embedding: ",emb)
-    #print("Features: ",feat)
+    print("Embedding: ",emb)
+    print("Features: ",feat)
     
 
