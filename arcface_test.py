@@ -43,12 +43,14 @@ if __name__ == '__main__':
     img_name = "/enr_1247347.png"
     img = Image.open(args.images_path+img_name)
     face = mtcnn(img)
+    print("Type face: ",type(face))
+    print(face)
     #img = test_transform(img)
     #print("Input shape: ",img.shape)
-    feat,emb = model(test_transform(face).unsqueeze(0))
+    #feat,emb = model(test_transform(face).unsqueeze(0))
     #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
                 
-    print("Embedding: ",emb)
-    print("Features: ",feat)
+    #print("Embedding: ",emb)
+    #print("Features: ",feat)
     
 
