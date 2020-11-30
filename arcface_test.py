@@ -31,7 +31,10 @@ if __name__ == '__main__':
 
     learner = face_learner(args,inference=True)
     model = learner.model
-    model.load_state_dict(torch.load(args.weights_path))
+    if(args.device == 'cpu'):
+        model.load_state_dict(torch.load(args.weights_path,map_location=torch.device('cpu')))
+    else:
+        model.load_state_dict(torch.load(args.weights_path))
     model.eval()
     print("Modelo cargado correctamente !! wuju")
 
