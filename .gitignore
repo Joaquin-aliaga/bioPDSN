@@ -1,3 +1,4 @@
 weights/
 test_images/
+lib/models/__pycache__/
 lib/models/__pycache__/arcface.cpython-36.pyc
