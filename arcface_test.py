@@ -3,34 +3,35 @@ from easydict import EasyDict as edict
 from lib.Learner import face_learner
 from lib.mtcnn import MTCNN
 from torchvision import transforms as trans
+import argparse
 
-#mtcnn = MTCNN()
-print("mtcnn loaded")
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='for arcface test')
+    parser.add_argument("-i", "--input_size", help="input size", default="112,112", type=str)
+    parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
+    parser.add_argument("-u", "--use_mobilefacenet", help="Wheter use mobilefacenet ", default=False, type=bool)
+    parser.add_argument('-d','--net_depth',help='how many layers [50,100,152]',default=50, type=int)
+    parser.add_argument("-n", "--net_mode", help="which network, [ir, ir_se, mobilefacenet]",default='ir_se', type=str)
+    parser.add_argument("-threshold", "--threshold", help="Threshold to use in verification", default=0.5, type=float)
+    parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
+    parser.add_argument("-w", "--weights_path", help="Path to weights", default=None, type=str)
+    parser.add_argument("-transform","--transform", help="Input transform",default=False,type=bool)
+    args = parser.parse_args()
 
-conf = edict()
-#conf.data_path = Path('data')
-#conf.work_path = Path('work_space/')
-#conf.model_path = conf.work_path/'models'
-#conf.log_path = conf.work_path/'log'
-#conf.save_path = conf.work_path/'save'
-conf.input_size = [112,112]
-conf.embedding_size = 512
-conf.use_mobilfacenet = False
-conf.net_depth = 50
-conf.drop_ratio = 0.6
-conf.net_mode = 'ir_se' # or 'ir'
-conf.threshold = 0.5
-conf.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print("Device: ",conf.device)
-conf.test_transform = trans.Compose([
-                trans.ToTensor(),
-                trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-            ])
-#conf.data_mode = 'emore'
+    print("Device: ",args.device)
+    '''
+    conf.test_transform = trans.Compose([
+                    trans.ToTensor(),
+                    trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+                ])
+    '''
+    #mtcnn = MTCNN()
+    #print("mtcnn loaded")
 
-learner = face_learner(conf,inference=True)
-model = learner.model
-model.load_state_dict(torch.load("./weights/model_ir_se50.pth"))
-model.eval()
-print("Modelo cargado correctamente !! wuju")
+
+    learner = face_learner(args,inference=True)
+    model = learner.model
+    model.load_state_dict(torch.load(args.weights_path))
+    model.eval()
+    print("Modelo cargado correctamente !! wuju")
 
