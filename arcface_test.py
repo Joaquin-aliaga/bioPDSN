@@ -1,8 +1,9 @@
 import torch
 from easydict import EasyDict as edict
 from lib.Learner import face_learner
-from lib.mtcnn import MTCNN
+#from lib.mtcnn import MTCNN
 from torchvision import transforms as trans
+from PIL import Image
 import argparse
 
 if __name__ == '__main__':
@@ -17,14 +18,10 @@ if __name__ == '__main__':
     parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-w", "--weights_path", help="Path to weights", default=None, type=str)
     parser.add_argument("-transform","--transform", help="Input transform",default=False,type=bool)
+    parser.add_argument("-images","--images_path", help="Path to images",default=None,type=str)
     args = parser.parse_args()
 
-    '''
-    conf.test_transform = trans.Compose([
-                    trans.ToTensor(),
-                    trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
-                ])
-    '''
+    
     #mtcnn = MTCNN()
     #print("mtcnn loaded")
 
@@ -35,6 +32,20 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(args.weights_path,map_location=torch.device('cpu')))
     else:
         model.load_state_dict(torch.load(args.weights_path))
-    model.eval()
+    #model.eval()
     print("Modelo cargado correctamente !! wuju")
+    
+    test_transform = trans.Compose([
+                    trans.ToTensor(),
+                    trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
+    img_name = "/enr_1247347.png"
+    img = Image.open(args.images_path+img_name)
+    #img = test_transform(img)
+    #print("Input shape: ",img.shape)
+    feat,emb = model(test_transform(img).unsqueeze(0))
+    #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
+                
+    print("Embedding: ",emb)
+    print("Features: ",feat)
+    
 

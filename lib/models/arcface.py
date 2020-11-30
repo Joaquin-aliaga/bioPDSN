@@ -118,7 +118,7 @@ class Backbone(Module):
         elif mode == 'ir':
             unit_module = bottleneck_IR
         self.input_layer = Sequential(
-            Conv2d(in_channels=3, out_channels=63, kernel_size=3, stride=1, padding=1, bias=False),
+            Conv2d(in_channels=3, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False),
             BatchNorm2d(64),
             PReLU(64)
         )
@@ -142,9 +142,9 @@ class Backbone(Module):
 
     def forward(self,x):
         x = self.input_layer(x)
-        x = self.body(x)
-        x = self.output_layer(x)
-        return l2_norm(x)
+        features = self.body(x)
+        x = self.output_layer(features)
+        return features,l2_norm(x)
 
 # Arcface Head
 class Arcface(Module):
