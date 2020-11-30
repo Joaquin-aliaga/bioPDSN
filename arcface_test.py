@@ -13,12 +13,12 @@ if __name__ == '__main__':
     parser.add_argument('-d','--net_depth',help='how many layers [50,100,152]',default=50, type=int)
     parser.add_argument("-n", "--net_mode", help="which network, [ir, ir_se, mobilefacenet]",default='ir_se', type=str)
     parser.add_argument("-threshold", "--threshold", help="Threshold to use in verification", default=0.5, type=float)
+    parser.add_argument("-drop", "--drop_ratio", help="Drop ratio", default=0.6, type=float)
     parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-w", "--weights_path", help="Path to weights", default=None, type=str)
     parser.add_argument("-transform","--transform", help="Input transform",default=False,type=bool)
     args = parser.parse_args()
 
-    print("Device: ",args.device)
     '''
     conf.test_transform = trans.Compose([
                     trans.ToTensor(),
