@@ -45,7 +45,7 @@ if __name__ == '__main__':
     img = mtcnn(img)
     #img = test_transform(face.numpy())
     #print("Input shape: ",img.shape)
-    feat,emb = model(img)
+    feat,emb = model(img.unsqueeze(0))
     #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
                 
     print("Embedding: ",emb)
