@@ -5,6 +5,8 @@ from lib.Learner import face_learner
 from torchvision import transforms as trans
 from PIL import Image
 import argparse
+from facenet_pytorch import MTCNN, InceptionResnetV1
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='for arcface test')
@@ -21,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("-images","--images_path", help="Path to images",default=None,type=str)
     args = parser.parse_args()
 
-    
+    mtcnn = MTCNN(image_size=112,device=args.device, keep_all=False)
     #mtcnn = MTCNN()
     #print("mtcnn loaded")
 
@@ -34,15 +36,16 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(args.weights_path))
     #model.eval()
     print("Modelo cargado correctamente !! wuju")
-    
+    model.eval()
     test_transform = trans.Compose([
                     trans.ToTensor(),
                     trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
     img_name = "/enr_1247347.png"
     img = Image.open(args.images_path+img_name)
+    face = mtcnn(img)
     #img = test_transform(img)
     #print("Input shape: ",img.shape)
-    feat,emb = model(test_transform(img).unsqueeze(0))
+    feat,emb = model(test_transform(face).unsqueeze(0))
     #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
                 
     print("Embedding: ",emb)

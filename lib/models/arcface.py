@@ -142,9 +142,9 @@ class Backbone(Module):
 
     def forward(self,x):
         x = self.input_layer(x)
-        features = self.body(x)
-        x = self.output_layer(features)
-        return features,l2_norm(x)
+        x = self.body(x)
+        x = self.output_layer(x)
+        return l2_norm(x)
 
 # Arcface Head
 class Arcface(Module):
