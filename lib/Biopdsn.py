@@ -8,7 +8,7 @@ args = {
     "batch_size" : 1,
     "image_size" : '3,112,112',
     "resize" : (910,1240),
-    "model_path" : "./model/model-r50-am-lfw/model,00",
+    "model_path" : "./weights/model-r50-am-lfw/model,00",
     "mtcnn_norm": True,
     "keep_all": False
 } 
@@ -26,6 +26,7 @@ class BioPDSN(nn.Module):
 
         self.resnet = Resnet(args)
 
+        # Mask Generator
         self.sia = nn.Sequential(
             #nn.BatchNorm2d(filter_list[4]),
             nn.Conv2d(self.features_shape, 512, kernel_size=3, stride=1, padding=1, bias=False),
@@ -40,9 +41,7 @@ class BioPDSN(nn.Module):
             nn.BatchNorm1d(512),
         )
 
-        #cuanto exista el mask generator
-        #self.mask = MaskGen()
-    
+        
     def get_faces(self,batch):
         if (type(batch) == list):
             batch = [img.resize(self.resize) for img in batch]
