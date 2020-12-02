@@ -3,6 +3,7 @@ import cv2
 import os
 import mxnet as mx
 from tqdm import tqdm
+import argparse
 
 '''
 For train dataset, insightface provide a mxnet .rec file, just install a mxnet-cpu for extract images
@@ -27,7 +28,10 @@ def load_mx_rec(rec_path,save_folder):
         os.makedirs(label_path)
     img.save(os.path.join(label_path, str(idx).zfill(8) + '.jpg'), quality=95)
 
-if name == '__main__':
-    rec_path = './'
-    save_folder = 'casia_webface_112x112'
-    load_mx_rec(rec_path,save_folder)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Create casiawebface 112x112 dataset from .rec file')
+    parser.add_argument("-r", "--rec_path", help="Path to .rec folder, .idx file must be in the same folder",default='./',type=str)
+    parser.add_argument('-s','--save_folder',help='Folder to save images',default="casia_webface_112x112", type=str)
+    args = parser.parse_args()
+
+    load_mx_rec(args.rec_path,args.save_folder)
