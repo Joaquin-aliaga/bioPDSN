@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("-drop", "--drop_ratio", help="Drop ratio", default=0.6, type=float)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=0.02,type=float)
     parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
-    parser.add_argument("-w", "--weights_path", help="Path to weights", default=None, type=str)
+    parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     parser.add_argument("-transform","--transform", help="Input transform",default=False,type=bool)
     parser.add_argument("-images","--images_path", help="Path to images",default=None,type=str)
     parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)

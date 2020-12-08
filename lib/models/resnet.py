@@ -6,7 +6,7 @@ import mxnet as mx
 class Resnet():
   def __init__(self,args):
     self.imageShape = [int(x) for x in args.input_size.split(',')]
-    self.vec = args.model_path.split(',')
+    self.vec = args.resnet_weights.split(',')
     self.batch_size = args.batch_size
     self.ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
     
