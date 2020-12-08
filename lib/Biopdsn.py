@@ -15,7 +15,6 @@ args example
 args = {
     "batch_size" : 1,
     "image_size" : '3,112,112',
-    "resize" : (910,1240),
     "model_path" : "./weights/model-r50-am-lfw/model,00",
     "mtcnn_norm": True,
     "keep_all": False,
@@ -35,7 +34,6 @@ class BioPDSN(pl.LightningModule):
         #self.crossEntropyLoss = None
         self.lr = 0.02
         
-        self.resize = args.resize
         self.imageShape = [int(x) for x in args.image_size.split(',')]
         self.features_shape = 512
         self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
@@ -62,7 +60,7 @@ class BioPDSN(pl.LightningModule):
         
     def get_faces(self,batch):
         if (type(batch) == list):
-            batch = [img.resize(self.resize) for img in batch]
+            batch = [img.resize(self.imageShape[1]) for img in batch]
         return self.mtcnn(batch)
 
     
