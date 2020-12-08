@@ -1,6 +1,6 @@
 from lib.models.resnet import Resnet
 from facenet_pytorch import MTCNN
-from data.rmfd_dataset import MaskDataset
+from lib.data.rmfd_dataset import MaskDataset
 
 import pytorch_lightning as pl
 from sklearn.model_selection import train_test_split
