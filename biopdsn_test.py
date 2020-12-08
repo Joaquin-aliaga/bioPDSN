@@ -12,7 +12,7 @@ from facenet_pytorch import MTCNN, InceptionResnetV1
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='for arcface test')
     parser.add_argument("-p","--dfPath",help="Path to dataframe",type=str)
-    parser.add_argument("-i", "--input_size", help="input size", default="112,112", type=str)
+    parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
