@@ -32,5 +32,5 @@ if __name__ == '__main__':
     #mtcnn = MTCNN()
     #print("mtcnn loaded")
 
-    biopdsn = BioPDSN(args)
+    biopdsn = BioPDSN(args).to(args.device)
     print(biopdsn.get_parameters())
