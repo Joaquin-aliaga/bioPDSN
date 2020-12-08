@@ -1,7 +1,15 @@
 from lib.models.resnet import Resnet
 from facenet_pytorch import MTCNN
+from data.rmfd_dataset import MaskDataset
+
+import pytorch_lightning as pl
+from sklearn.model_selection import train_test_split
+
 import torch
 import torch.nn as nn
+from torch.optim import Adam
+from torch.optim.optimizer import Optimizer
+from torch.utils.data import DataLoader
 '''
 args example
 args = {
@@ -10,21 +18,31 @@ args = {
     "resize" : (910,1240),
     "model_path" : "./weights/model-r50-am-lfw/model,00",
     "mtcnn_norm": True,
-    "keep_all": False
+    "keep_all": False,
+    "dfPath": 'data/merged_df.pickle'
 } 
 '''
 
-class BioPDSN(nn.Module):
+class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
+        self.batch_size = args.batch_size
+        self.num_workers = args.num_workers
+        self.dfPath = args.dfPath
+        self.df = None
+        self.trainDF = None
+        self.validateDF = None
+        #self.crossEntropyLoss = None
+        #self.learningRate = 0.00001
         
         self.resize = args.resize
         self.imageShape = [int(x) for x in args.image_size.split(',')]
         self.features_shape = 512
         self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
         self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, device = self.device, post_process=args.mtcnn_norm,keep_all=args.keep_all)
-
         self.resnet = Resnet(args)
+        self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
+        self.loss_cls = nn.CrossEntropyLoss().to(self.device)
 
         # Mask Generator
         self.sia = nn.Sequential(
@@ -73,4 +91,22 @@ class BioPDSN(nn.Module):
         fc2 = self.fc(fc2)
 
         return f1_masked, f2_masked, fc1, fc2, f_diff, out
+
+    def prepare_data(self):
+        self.df = pd.read_pickle(self.dfPath)
+        train, validate = train_test_split(self.df, test_size=0.2, random_state=42)
+        self.trainDF = MaskDataset(train,self.imageShape[-2:])
+        self.validateDF = MaskDataset(validate,self.imageShape[-2:])
+
+    @ptl.data_loader
+    def train_dataloader(self):
+        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=args.num_workers)
+    
+    @ptl.data_loader
+    def val_dataloader(self):
+        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=args.num_workers)
+    
+    def configure_optimizers(self):
+        return Adam(self.parameters(), lr=self.learningRate)
+    
 

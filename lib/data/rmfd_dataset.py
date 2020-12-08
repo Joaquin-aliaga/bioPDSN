@@ -1,5 +1,6 @@
 '''
-code from https://github.com/JadHADDAD92/covid-mask-detector
+author: Joaquin Aliaga
+refactor from https://github.com/JadHADDAD92/covid-mask-detector
 '''
 
 import cv2
@@ -10,10 +11,6 @@ from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 
 
 class MaskDataset(Dataset):
-    """ Masked faces dataset
-        0 = 'no mask'
-        1 = 'mask'
-    """
     def __init__(self, dataFrame,input_size=[112,112]):
         self.dataFrame = dataFrame
         
