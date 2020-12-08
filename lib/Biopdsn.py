@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 args example
 args = {
     "batch_size" : 1,
-    "image_size" : '3,112,112',
+    "input_size" : '3,112,112',
     "model_path" : "./weights/model-r50-am-lfw/model,00",
     "mtcnn_norm": True,
     "keep_all": False,
@@ -34,7 +34,7 @@ class BioPDSN(pl.LightningModule):
         #self.crossEntropyLoss = None
         self.lr = 0.02
         
-        self.imageShape = [int(x) for x in args.image_size.split(',')]
+        self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
         self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
         self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, device = self.device, post_process=args.mtcnn_norm,keep_all=args.keep_all)
