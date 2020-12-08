@@ -5,10 +5,9 @@ import mxnet as mx
 #Resnet50 class (Arcface model)
 class Resnet():
   def __init__(self,args):
-    self.imageShape = [int(x) for x in args.image_size.split(',')]
+    self.imageShape = [int(x) for x in args.input_size.split(',')]
     self.vec = args.model_path.split(',')
     self.batch_size = args.batch_size
-    self.resize = args.resize
     self.ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
     
     #self.internals = None
