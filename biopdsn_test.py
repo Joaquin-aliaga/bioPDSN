@@ -1,6 +1,7 @@
 import torch
 from easydict import EasyDict as edict
-from lib.Learner import face_learner
+from lib.Biopdsn import BioPDSN
+#from lib.Learner import face_learner
 #from lib.mtcnn import MTCNN
 from torchvision import transforms as trans
 from PIL import Image
@@ -27,28 +28,5 @@ if __name__ == '__main__':
     #mtcnn = MTCNN()
     #print("mtcnn loaded")
 
-
-    learner = face_learner(args,inference=True)
-    model = learner.model
-    if(args.device == 'cpu'):
-        model.load_state_dict(torch.load(args.weights_path,map_location=torch.device('cpu')))
-    else:
-        model.load_state_dict(torch.load(args.weights_path))
-    #model.eval()
-    print("Modelo cargado correctamente !! wuju")
-    model.eval()
-    #test_transform = trans.Compose([
-    #                trans.ToTensor(),
-    #                trans.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])])
-    img_name = "/enr_1247347.png"
-    img = Image.open(args.images_path+img_name)
-    img = mtcnn(img)
-    #img = test_transform(face.numpy())
-    #print("Input shape: ",img.shape)
-    feat,emb = model(img.unsqueeze(0))
-    #emb = self.model(conf.test_transform(img).to(conf.device()).unsqueeze(0))
-                
-    print("Embedding: ",emb)
-    print("Features: ",feat)
-    
-
+    biopdsn = BioPDSN(args)
+    print(biopdsn.get_parameters())

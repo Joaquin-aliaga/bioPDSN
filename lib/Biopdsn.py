@@ -33,7 +33,7 @@ class BioPDSN(pl.LightningModule):
         self.trainDF = None
         self.validateDF = None
         #self.crossEntropyLoss = None
-        #self.learningRate = 0.00001
+        self.lr = 0.02
         
         self.resize = args.resize
         self.imageShape = [int(x) for x in args.image_size.split(',')]
@@ -107,6 +107,9 @@ class BioPDSN(pl.LightningModule):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=args.num_workers)
     
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=self.learningRate)
+        return Adam(self.parameters(), lr=self.lr)
+
+    def get_parameters(self):
+        return self.parameters()
     
 
