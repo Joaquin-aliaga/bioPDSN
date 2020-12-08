@@ -37,7 +37,9 @@ class BioPDSN(pl.LightningModule):
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
         #self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
-        self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, device = self.device, post_process=args.mtcnn_norm,keep_all=args.keep_all)
+        self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
+                            device = self.device, post_process=args.mtcnn_norm,
+                            keep_all=args.keep_all)
         self.resnet = Resnet(args)
         self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
         self.loss_cls = nn.CrossEntropyLoss().to(self.device)

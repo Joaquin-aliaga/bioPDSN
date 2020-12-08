@@ -26,8 +26,9 @@ if __name__ == '__main__':
     parser.add_argument("-w", "--weights_path", help="Path to weights", default=None, type=str)
     parser.add_argument("-transform","--transform", help="Input transform",default=False,type=bool)
     parser.add_argument("-images","--images_path", help="Path to images",default=None,type=str)
-    parser.add_argument("-pre_norm","--mtcnn_norm",help="Wether norm input after mtcnn",default=True,type=bool)
-    args = parser.parse_args()
+    parser.add_argument("-pre_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)
+    parser.add_argument("-pre_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)
+    args = parser.parse_args("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
 
     mtcnn = MTCNN(image_size=112,device=args.device, keep_all=False)
     #mtcnn = MTCNN()
