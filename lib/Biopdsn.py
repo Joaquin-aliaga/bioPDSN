@@ -96,11 +96,9 @@ class BioPDSN(pl.LightningModule):
         self.trainDF = MaskDataset(train,self.imageShape[-2:])
         self.validateDF = MaskDataset(validate,self.imageShape[-2:])
 
-    @pl.data_loader
     def train_dataloader(self):
         return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=args.num_workers)
     
-    @pl.data_loader
     def val_dataloader(self):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=args.num_workers)
     
