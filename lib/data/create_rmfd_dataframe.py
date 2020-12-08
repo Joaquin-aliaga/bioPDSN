@@ -18,21 +18,25 @@ if __name__ == '__main__':
     maskPath = datasetPath/'AFDB_masked_face_dataset'
     nonMaskPath = datasetPath/'AFDB_face_dataset'
     maskDF = pd.DataFrame()
+    nonMaskDF = pd.DataFrame()
 
     for subject in tqdm(list(maskPath.iterdir()), desc='mask photos'):
+        id = subject.stem
         for imgPath in subject.iterdir():
             maskDF = maskDF.append({
-                'image': str(imgPath),
-                'mask': 1
+                'target': str(imgPath),
+                'id_name': str(id)
             }, ignore_index=True)
 
-    for subject in tqdm(list(nonMaskPath.iterdir()), desc='non mask photos'):
+    for subject in tqdm(list(nonMaskPath.iterdir()), desc='no masked photos'):
+        id = subject.stem
         for imgPath in subject.iterdir():
-            maskDF = maskDF.append({
-                'image': str(imgPath),
-                'mask': 0
+            nonMaskDF = nonMaskDF.append({
+                'source': str(imgPath),
+                'id_name': str(id)
             }, ignore_index=True)
-
-    dfName = './mask_df.pickle'
+    
+    merge = pd.merge(nonMaskDF,maskDF,on='id_name')
+    dfName = './merged_df.pickle'
     print(f'saving Dataframe to: {dfName}')
-    maskDF.to_pickle(dfName)
+    merge.to_pickle(dfName)

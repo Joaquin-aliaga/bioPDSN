@@ -28,9 +28,11 @@ class MaskDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        image = cv2.imdecode(np.fromfile(row['image'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        source = cv2.imdecode(np.fromfile(row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        target = cv2.imdecode(np.fromfile(row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         return {
-            'image': self.transformations(image),
+            'source': self.transformations(source),
+            'target': self.transformations(target),
             'mask': tensor([row['mask']], dtype=long), # pylint: disable=not-callable
         }
     
