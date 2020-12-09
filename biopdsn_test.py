@@ -32,7 +32,7 @@ if __name__ == '__main__':
     #print(biopdsn.get_parameters())
     for name, param in biopdsn.named_parameters():
         print("Name: ",name)
-        print("Param: ",param)
+        #print("Param: ",param)
         '''
         if param.requires_grad == True:
             if 'sia' in name:
