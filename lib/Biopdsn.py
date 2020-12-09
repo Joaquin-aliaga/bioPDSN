@@ -4,6 +4,7 @@ from lib.data.rmfd_dataset import MaskDataset
 
 import pytorch_lightning as pl
 from sklearn.model_selection import train_test_split
+import pandas as pd
 
 import torch
 import torch.nn as nn
@@ -94,20 +95,17 @@ class BioPDSN(pl.LightningModule):
 
     def prepare_data(self):
         self.df = pd.read_pickle(self.dfPath)
-        train, validate = train_test_split(self.df, test_size=0.2, random_state=42)
+        train, validate = train_test_split(df, test_size=0.2, random_state=42,stratify=self.df.id_class)
         self.trainDF = MaskDataset(train,self.imageShape[-2:])
         self.validateDF = MaskDataset(validate,self.imageShape[-2:])
 
     def train_dataloader(self):
-        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=args.num_workers)
+        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
     
     def val_dataloader(self):
-        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=args.num_workers)
+        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers)
     
     def configure_optimizers(self):
         return Adam(self.parameters(), lr=self.lr)
 
-    def get_parameters(self):
-        return self.parameters()
-    
 

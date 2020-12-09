@@ -37,6 +37,13 @@ if __name__ == '__main__':
             }, ignore_index=True)
     
     merge = pd.merge(nonMaskDF,maskDF,on='id_name')
+
+    #adding class numbers to id_names
+    merge['id_name'] = merge['id_name'].astype('category')
+    merge['id_class'] = merge['id_name'].cat.codes
+
     dfName = './merged_df.pickle'
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
+
+    

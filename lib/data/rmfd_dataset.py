@@ -30,7 +30,7 @@ class MaskDataset(Dataset):
         return {
             'source': self.transformations(source),
             'target': self.transformations(target),
-            'mask': tensor([row['mask']], dtype=long), # pylint: disable=not-callable
+            'class': tensor([row['id_class']], dtype=long), # pylint: disable=not-callable
         }
     
     def __len__(self):
