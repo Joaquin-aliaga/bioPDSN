@@ -1,12 +1,8 @@
-import torch
-from easydict import EasyDict as edict
+#import torch
+#from easydict import EasyDict as edict
 from lib.Biopdsn import BioPDSN
-#from lib.Learner import face_learner
-#from lib.mtcnn import MTCNN
-from torchvision import transforms as trans
-from PIL import Image
 import argparse
-from facenet_pytorch import MTCNN, InceptionResnetV1
+from facenet_pytorch import MTCNN
 
 
 if __name__ == '__main__':
@@ -31,9 +27,18 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    mtcnn = MTCNN(image_size=112,device=args.device, keep_all=False)
-    #mtcnn = MTCNN()
-    #print("mtcnn loaded")
-
     biopdsn = BioPDSN(args).to(args.device)
-    print(biopdsn.get_parameters())
+    
+    #print(biopdsn.get_parameters())
+    for name, param in biopdsn.named_parameters():
+        print("Name: ",name)
+        print("Param: ",param)
+        '''
+        if param.requires_grad == True:
+            if 'sia' in name:
+                params_to_update.append(param)
+                print("Update \t", name)
+            else:
+                params_to_stay.append(param)
+                print("Stay \t", name)
+        '''
