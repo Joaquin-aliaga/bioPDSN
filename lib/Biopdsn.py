@@ -34,6 +34,8 @@ class BioPDSN(pl.LightningModule):
         self.validateDF = None
         #self.crossEntropyLoss = None
         self.lr = 0.02
+        self.momentum = args.momentum
+        self.weight_decay = args.weight_decay
         
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
@@ -59,7 +61,22 @@ class BioPDSN(pl.LightningModule):
             nn.Linear(self.features_shape * 7 * 6, 512),
             nn.BatchNorm1d(512),
         )
-
+        # Weight initialization
+        for m in self.modules():
+            if (isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear)):
+                nn.init.xavier_uniform_(m.weight)
+                if m.bias is not None:
+                    nn.init.constant(m.bias, 0.0)
+            elif (isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d)):
+                nn.init.constant_(m.weight,1)
+                nn.init.constant_(m.bias,0)
+        
+        freeze_layers()
+        
+    def freeze_layers(self):
+        for name, param in self.named_parameters():
+            if 'mtcnn' in name:
+                param.requires_grad = False
         
     def get_faces(self,batch):
         if (type(batch) == list):
@@ -106,6 +123,11 @@ class BioPDSN(pl.LightningModule):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers)
     
     def configure_optimizers(self):
-        return Adam(self.parameters(), lr=self.lr)
+        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
+                                lr=self.lr,
+                                momentum=self.momentum,
+                                weight_decay=self.weight_decay)
+    
+        return optimizer
 
 
