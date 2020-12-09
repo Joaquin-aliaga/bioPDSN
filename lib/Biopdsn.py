@@ -44,9 +44,11 @@ class BioPDSN(pl.LightningModule):
                             device = self.device, post_process=args.mtcnn_norm,
                             keep_all=args.keep_all)
         self.resnet = Resnet(args)
-        self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
+        #criterion
         self.loss_cls = nn.CrossEntropyLoss().to(self.device)
-
+        #criterion2
+        self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
+        
         # Mask Generator
         self.sia = nn.Sequential(
             #nn.BatchNorm2d(filter_list[4]),
@@ -72,7 +74,8 @@ class BioPDSN(pl.LightningModule):
                 nn.init.constant_(m.bias,0)
         
         freeze_layers()
-        
+        prepare_data()
+
     def freeze_layers(self):
         for name, param in self.named_parameters():
             if 'mtcnn' in name:
@@ -92,23 +95,23 @@ class BioPDSN(pl.LightningModule):
         return features
 
     def forward(self,source,target):
-        f1,f2 = self.get_features(source,target)
+        f_clean,f_occ = self.get_features(source,target)
 
         # Begin Siamese branch
-        f_diff = torch.add(f1, -1.0, f2)
+        f_diff = torch.add(f_clean, -1.0, f_occ)
         f_diff = torch.abs(f_diff)
-        out = self.sia(f_diff)
+        mask = self.sia(f_diff)
         # End Siamese branch
 
-        f1_masked = f1 * out
-        f2_masked = f2 * out
+        f_clean_masked = f_clean * mask
+        f_occ_masked = f_occ * mask
 
-        fc1 = f1_masked.view(f1_masked.size(0), -1) #256*(512*7*6)
-        fc2 = f2_masked.view(f2_masked.size(0), -1)
-        fc1 = self.fc(fc1)
-        fc2 = self.fc(fc2)
+        fc = f_clean_masked.view(f_clean_masked.size(0), -1) #256*(512*7*6)
+        fc_occ = f_occ_masked.view(f_occ_masked.size(0), -1)
+        fc = self.fc(fc)
+        fc_occ = self.fc(fc_occ)
 
-        return f1_masked, f2_masked, fc1, fc2, f_diff, out
+        return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
 
     def prepare_data(self):
         self.df = pd.read_pickle(self.dfPath)
@@ -129,5 +132,19 @@ class BioPDSN(pl.LightningModule):
                                 weight_decay=self.weight_decay)
     
         return optimizer
+    
+    def training_step(self, batch, batch_idx)
+        sources, targets, labels = batch['source'], batch['target'],batch['class']
+        labels = labels.flatten()
+        f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
+        sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
+        # Falta agregar una capa FC al final con el numero de clases para obtener este loss
+        #cls_loss = self.loss_cls()
+        
+        # Hay que arreglar este loss, ver que es s_weight y ver si usar loss = cls_loss + 10*sia_loss o no
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + args.s_weight * sia_loss
+        
+        tensorboardLogs = {'train_loss': loss}
+        return {'loss': loss, 'log': tensorboardLogs}
 
 
