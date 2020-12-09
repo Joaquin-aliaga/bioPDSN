@@ -31,9 +31,6 @@ if __name__ == '__main__':
     
     #print(biopdsn.get_parameters())
     for name, param in biopdsn.named_parameters():
-        print("Name: ",name)
-        #print("Param: ",param)
-        '''
         if param.requires_grad == True:
             if 'sia' in name:
                 params_to_update.append(param)
@@ -41,4 +38,3 @@ if __name__ == '__main__':
             else:
                 params_to_stay.append(param)
                 print("Stay \t", name)
-        '''
