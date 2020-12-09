@@ -32,9 +32,16 @@ if __name__ == '__main__':
     #print(biopdsn.get_parameters())
     for name, param in biopdsn.named_parameters():
         if param.requires_grad == True:
-            if 'sia' in name:
+            if not 'mtcnn' in name:
                 #params_to_update.append(param)
                 print("Update \t", name)
-            else:
-                #params_to_stay.append(param)
-                print("Stay \t", name)
+    '''
+    Freeze parameters
+    # we want to freeze the fc2 layer this time: only train fc1 and fc3
+    net.fc2.weight.requires_grad = False
+    net.fc2.bias.requires_grad = False
+
+    # passing only those parameters that explicitly requires grad
+    optimizer = optim.Adam(filter(lambda p: p.requires_grad, net.parameters()), lr=0.1)
+
+    '''
