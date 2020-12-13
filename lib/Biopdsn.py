@@ -15,17 +15,6 @@ import torch.nn as nn
 from torch.optim import Adam
 from torch.optim.optimizer import Optimizer
 from torch.utils.data import DataLoader
-'''
-args example
-args = {
-    "batch_size" : 1,
-    "input_size" : '3,112,112',
-    "model_path" : "./weights/model-r50-am-lfw/model,00",
-    "mtcnn_norm": True,
-    "keep_all": False,
-    "dfPath": 'data/merged_df.pickle'
-} 
-'''
 
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
@@ -148,10 +137,10 @@ class BioPDSN(pl.LightningModule):
         return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
 
     def train_dataloader(self):
-        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers,drop_last=True)
     
     def val_dataloader(self):
-        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
