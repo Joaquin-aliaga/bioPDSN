@@ -34,12 +34,10 @@ class Resnet():
     '''
     batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''
-    inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
+    inputBlob = np.zeros( (self.batch_size*len(batch), self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
     k = 1
     for b in batch:
-      print("Paso por el for {} veces".format(k))
-      k+=1
       for img in b:
         print("Img type: ",type(img))
         print("Img shape: ",img.shape)
