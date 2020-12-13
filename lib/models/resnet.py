@@ -43,6 +43,7 @@ class Resnet():
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
-    features = self.net.model.get_outputs()[0].asnumpy()
-    print("Features shape: ",features.shape)
-    return features  
+    sources,targets = self.net.model.get_outputs()[0].asnumpy()
+    print("sources shape: ",sources.shape)
+    print("targets shape: ",targets.shape)
+    return sources,targets
