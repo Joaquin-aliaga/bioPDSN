@@ -34,7 +34,7 @@ class Resnet():
     '''
     batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''
-    inputBlob_sources = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
+    inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
     
     for img in batch:
