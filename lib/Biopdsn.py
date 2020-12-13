@@ -37,6 +37,7 @@ class BioPDSN(pl.LightningModule):
         self.lr = 0.02
         #self.momentum = args.momentum
         #self.weight_decay = args.weight_decay
+        self.num_class = args.num_class
         
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
