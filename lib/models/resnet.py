@@ -34,16 +34,15 @@ class Resnet():
     '''
     batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''
-    inputBlob = np.zeros( (self.batch_size*len(batch), self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
+    inputBlob_sources = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
-    for b in batch:
-      for img in b:
-        inputBlob[idx] = img
-        idx+=1
+    
+    for img in batch:
+      inputBlob[idx] = img
+      idx+=1
+    
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
-    sources,targets = self.net.model.get_outputs()[0].asnumpy()
-    print("sources shape: ",sources.shape)
-    print("targets shape: ",targets.shape)
-    return sources,targets
+    features = self.net.model.get_outputs()[0].asnumpy()
+    return features

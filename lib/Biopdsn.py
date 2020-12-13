@@ -113,8 +113,8 @@ class BioPDSN(pl.LightningModule):
         return self.mtcnn(batch)
 
     
-    def get_features(self,source,target):
-        batch = [source,target]
+    def get_features(self,imgs):
+        batch = [imgs]
         if(self.use_mtcnn):
             batch = self.get_faces(batch)
         features = self.resnet.get_features(batch) #type(features) = numpy ndarray
@@ -122,7 +122,8 @@ class BioPDSN(pl.LightningModule):
         return features
 
     def forward(self,source,target):
-        f_clean,f_occ = self.get_features(source.cpu(),target.cpu())
+        f_clean = self.get_features(source.cpu())
+        f_occ = self.get_features(target.cpu())
         f_clean.to(torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu'))
         f_occ.to(torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu'))
 
