@@ -16,4 +16,4 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 3. (inside lib/data) `python create_rmfd_dataframe.py`
 4. `cd ../..`
 5. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
-6. python biopdsn_train.py -num_class 403 -use_mtcnn "False" -dfPath "./lib/data/dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64
+6. python biopdsn_train.py -num_class 403 -dfPath "./lib/data/dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64

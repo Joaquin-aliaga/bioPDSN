@@ -1,5 +1,5 @@
-#import torch
-#from easydict import EasyDict as edict
+import os
+
 from lib.Biopdsn import BioPDSN
 import argparse
 
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
-    parser.add_argument("-num_class","--num_class",help="Number of classes", type=int)
+    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
     #model args
@@ -31,9 +31,14 @@ if __name__ == '__main__':
     parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
 
     args = parser.parse_args()
-    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+    '''
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
+    args.cuda = not args.no_cuda and torch.cuda.is_available()
+    device = torch.device("cuda" if args.cuda else "cpu")
+    '''
+    
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
-
     biopdsn = BioPDSN(args).to(device)
     
     checkpoint_callback = ModelCheckpoint(
