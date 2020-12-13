@@ -140,7 +140,7 @@ class BioPDSN(pl.LightningModule):
     
         return optimizer
     
-    def training_step(self, batch, batch_idx)
+    def training_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
@@ -149,9 +149,9 @@ class BioPDSN(pl.LightningModule):
         #cls_loss = self.loss_cls()
         
         # Hay que arreglar este loss, ver que es s_weight y ver si usar loss = cls_loss + 10*sia_loss o no
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        #loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
         
-        tensorboardLogs = {'train_loss': loss}
+        #tensorboardLogs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboardLogs}
 
 
