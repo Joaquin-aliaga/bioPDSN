@@ -35,8 +35,8 @@ class BioPDSN(pl.LightningModule):
         self.validateDF = None
         #self.crossEntropyLoss = None
         self.lr = 0.02
-        self.momentum = args.momentum
-        self.weight_decay = args.weight_decay
+        #self.momentum = args.momentum
+        #self.weight_decay = args.weight_decay
         
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
@@ -134,9 +134,7 @@ class BioPDSN(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
-                                lr=self.lr,
-                                momentum=self.momentum,
-                                weight_decay=self.weight_decay)
+                                lr=self.lr)
     
         return optimizer
     
