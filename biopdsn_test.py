@@ -6,8 +6,12 @@ from facenet_pytorch import MTCNN
 
 
 if __name__ == '__main__':
+    #must be given
     parser = argparse.ArgumentParser(description='for arcface test')
     parser.add_argument("-p","--dfPath",help="Path to dataframe",type=str)
+    parser.add_argument("-num_class","--num_class",help="Number of classes", type=int)
+
+    #default
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-workers","--num_workers",help="num workers", default=4, type=int)

@@ -1,4 +1,5 @@
 from lib.models.resnet import Resnet
+from lib.models.layer import MarginCosineProduct
 from facenet_pytorch import MTCNN
 from lib.data.rmfd_dataset import MaskDataset
 
@@ -40,6 +41,7 @@ class BioPDSN(pl.LightningModule):
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
         #self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
         self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
                             device = self.device, post_process=args.mtcnn_norm,
                             keep_all=args.keep_all)
@@ -75,6 +77,11 @@ class BioPDSN(pl.LightningModule):
         
         freeze_layers()
         prepare_data()
+
+    def get_parameters(self,filter=None):
+        for name,param in self.named_parameters():
+            if(filter is not None and not filter in name):
+                print("Parametro: ",name)
 
     def freeze_layers(self):
         for name, param in self.named_parameters():
@@ -142,7 +149,7 @@ class BioPDSN(pl.LightningModule):
         #cls_loss = self.loss_cls()
         
         # Hay que arreglar este loss, ver que es s_weight y ver si usar loss = cls_loss + 10*sia_loss o no
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + args.s_weight * sia_loss
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
         
         tensorboardLogs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboardLogs}
