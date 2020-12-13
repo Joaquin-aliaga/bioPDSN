@@ -46,7 +46,7 @@ class Resnet():
       idx+=1
     '''
     print("Batch type: ",type(batch))
-    print("Batch shape: ",batch.shape)
+    print("Batch len: ",len(batch))
     inputBlob = np.array(batch)
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
