@@ -30,7 +30,7 @@ args = {
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
-        self.device = args.device
+        #self.device = args.device
         #data args
         self.dfPath = args.dfPath
         self.df = None
