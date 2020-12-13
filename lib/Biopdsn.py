@@ -52,7 +52,10 @@ class BioPDSN(pl.LightningModule):
         
         #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
-        self.use_mtcnn = args.use_mtcnn
+        if(args.use_mtcnn == "False"):
+            self.use_mtcnn = False
+        else:
+            self.use_mtcnn = True
         if(self.use_mtcnn):
             self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
                             device = self.device, post_process=args.mtcnn_norm,
