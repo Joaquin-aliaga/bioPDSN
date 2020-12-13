@@ -32,8 +32,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    args.device = device
 
-    biopdsn = BioPDSN(args).to(args.device)
+    biopdsn = BioPDSN(args).to(device)
     
     checkpoint_callback = ModelCheckpoint(
         filepath='./checkpoints/weights.ckpt',
