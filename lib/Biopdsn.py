@@ -113,8 +113,8 @@ class BioPDSN(pl.LightningModule):
         return self.mtcnn(batch)
 
     
-    def get_features(self,imgs):
-        batch = [imgs]
+    def get_features(self,batch):
+        #batch = [imgs]
         if(self.use_mtcnn):
             batch = self.get_faces(batch)
         features = self.resnet.get_features(batch) #type(features) = numpy ndarray
