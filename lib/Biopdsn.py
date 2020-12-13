@@ -74,9 +74,9 @@ class BioPDSN(pl.LightningModule):
             nn.Sigmoid(),
         )
         self.fc = nn.Sequential(
-            nn.BatchNorm1d(self.features_shape * 7 * 6),
+            nn.BatchNorm1d(self.features_shape * 7 * 7),
             #nn.Dropout(p=0),
-            nn.Linear(self.features_shape * 7 * 6, 512),
+            nn.Linear(self.features_shape * 7 * 7, 512),
             nn.BatchNorm1d(512),
         )
         # Weight initialization
