@@ -122,7 +122,7 @@ class BioPDSN(pl.LightningModule):
         return features
 
     def forward(self,source,target):
-        f_clean,f_occ = self.get_features(source,target)
+        f_clean,f_occ = self.get_features(source.cpu(),target.cpu())
         f_clean.to(self.device)
         f_occ.to(self.device)
 
