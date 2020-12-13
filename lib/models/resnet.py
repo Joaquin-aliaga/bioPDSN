@@ -8,8 +8,8 @@ class Resnet():
     self.imageShape = [int(x) for x in args.input_size.split(',')]
     self.vec = args.resnet_weights.split(',')
     self.batch_size = args.batch_size
-    self.ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
-    
+    #self.ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
+    self.ctx = mx.cpu()
     #self.internals = None
     self.net = self.load_feature_model()
 
@@ -42,7 +42,6 @@ class Resnet():
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
-    #features = self.net.model.get_outputs()[0].asnumpy()
-    features = self.net.model.get_outputs()[0]
+    features = self.net.model.get_outputs()[0].asnumpy()
     
     return features  
