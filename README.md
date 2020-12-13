@@ -2,8 +2,8 @@
 Face verification system using Pairwise Differential Siamese Network [paper](https://arxiv.org/abs/1908.06290)
 
 ## Requirements
-* Python 3.x
-* Pytorch
+* Python 3.6
+* Pytorch 1.7
 * facenet-pytorch
 * mxnet-cu101
 * pytorch-lightning
