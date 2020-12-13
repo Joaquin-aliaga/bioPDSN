@@ -4,7 +4,10 @@ from facenet_pytorch import MTCNN
 from lib.data.rmfd_dataset import MaskDataset
 
 import pytorch_lightning as pl
+
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
 import pandas as pd
 
 import torch
@@ -27,30 +30,37 @@ args = {
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
-        self.batch_size = args.batch_size
-        self.num_workers = args.num_workers
+        #data args
         self.dfPath = args.dfPath
         self.df = None
         self.trainDF = None
         self.validateDF = None
-        #self.crossEntropyLoss = None
-        self.lr = 0.02
+        #train args
+        self.batch_size = args.batch_size
+        self.num_workers = args.num_workers
+        self.lr = args.lr
         #self.momentum = args.momentum
         #self.weight_decay = args.weight_decay
         self.num_class = args.num_class
+        #loss criterion
+        self.loss_cls = nn.CrossEntropyLoss().to(self.device)
+        self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
         
+        #model args 
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
-        #self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        
+        #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
-        self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
+        self.use_mtcnn = args.use_mtcnn
+        if(self.use_mtcnn):
+            self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
                             device = self.device, post_process=args.mtcnn_norm,
                             keep_all=args.keep_all)
+        else:
+            self.mtcnn = None
         self.resnet = Resnet(args)
-        #criterion
-        self.loss_cls = nn.CrossEntropyLoss().to(self.device)
-        #criterion2
-        self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
         
         # Mask Generator
         self.sia = nn.Sequential(
@@ -77,8 +87,7 @@ class BioPDSN(pl.LightningModule):
                 nn.init.constant_(m.bias,0)
         
         self.freeze_layers()
-        #self.prepare_data()
-
+        
     def get_parameters(self,filter=None):
         for name,param in self.named_parameters():
             if(filter is not None and not filter in name):
@@ -88,6 +97,12 @@ class BioPDSN(pl.LightningModule):
         for name, param in self.named_parameters():
             if 'mtcnn' in name:
                 param.requires_grad = False
+    
+    def prepare_data(self):
+        self.df = pd.read_pickle(self.dfPath)
+        train, validate = train_test_split(self.df, test_size=0.2, random_state=42,stratify=self.df.id_class)
+        self.trainDF = MaskDataset(train,self.imageShape[-2:])
+        self.validateDF = MaskDataset(validate,self.imageShape[-2:])
         
     def get_faces(self,batch):
         if (type(batch) == list):
@@ -97,8 +112,9 @@ class BioPDSN(pl.LightningModule):
     
     def get_features(self,source,target):
         batch = [source,target]
-        faces = self.get_faces(batch)
-        features = self.resnet.get_features(faces) #type(features) = numpy ndarray
+        if(self.use_mtcnn):
+            batch = self.get_faces(batch)
+        features = self.resnet.get_features(batch) #type(features) = numpy ndarray
 
         return features
 
@@ -121,12 +137,6 @@ class BioPDSN(pl.LightningModule):
 
         return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
 
-    def prepare_data(self):
-        self.df = pd.read_pickle(self.dfPath)
-        train, validate = train_test_split(self.df, test_size=0.2, random_state=42,stratify=self.df.id_class)
-        self.trainDF = MaskDataset(train,self.imageShape[-2:])
-        self.validateDF = MaskDataset(validate,self.imageShape[-2:])
-
     def train_dataloader(self):
         return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
     
@@ -144,19 +154,47 @@ class BioPDSN(pl.LightningModule):
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
-        # version original
-        # f_masked, focc_masked, output, output_occ, f_diff, out = model(data, data_occ)
-
-        pred_clean = self.classifier(fc, labels)
-        loss_clean = self.loss_cls(pred_clean, labels)
         
-        pred_occ = self.classifier(fc_occ, labels)
-        loss_occ = self.loss_cls(pred_occ, labels)
+        score_clean = self.classifier(fc, labels)
+        loss_clean = self.loss_cls(score_clean, labels)
         
-        #---------------------------------------------Backward----------------------------------------------#
+        score_occ = self.classifier(fc_occ, labels)
+        loss_occ = self.loss_cls(score_occ, labels)
+        
         loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
         
         tensorboardLogs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboardLogs}
+
+    def validation_step(self, batch, batch_idx):
+        sources, targets, labels = batch['source'], batch['target'],batch['class']
+        labels = labels.flatten()
+        f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
+        sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
+        
+        score_clean = self.classifier(fc, labels)
+        loss_clean = self.loss_cls(score_clean, labels)
+        
+        score_occ = self.classifier(fc_occ, labels)
+        loss_occ = self.loss_cls(score_occ, labels)
+        
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        
+        _, pred_clean = torch.max(score_clean, dim=1)
+        acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
+        acc_clean = torch.tensor(acc_clean)
+        
+        _, pred_occ = torch.max(score_occ, dim=1)
+        acc_occ = accuracy_score(pred_occ.cpu(), labels.cpu())
+        acc_occ = torch.tensor(acc_occ)
+        
+        return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
+
+    def validation_epoch_end(self, outputs):
+        avgLoss = torch.stack([x['val_loss'] for x in outputs]).mean()
+        avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
+        avgAcc_occ = torch.stack([x['val_acc_occ'] for x in outputs]).mean()
+        tensorboardLogs = {'val_loss': avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
+        return {'val_loss': avgLoss, 'log': tensorboardLogs}
 
 
