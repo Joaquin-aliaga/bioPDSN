@@ -71,7 +71,7 @@ class BioPDSN(pl.LightningModule):
             if (isinstance(m, nn.Conv2d) or isinstance(m, nn.Linear)):
                 nn.init.xavier_uniform_(m.weight)
                 if m.bias is not None:
-                    nn.init.constant(m.bias, 0.0)
+                    nn.init.constant_(m.bias, 0.0)
             elif (isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d)):
                 nn.init.constant_(m.weight,1)
                 nn.init.constant_(m.bias,0)
@@ -123,7 +123,7 @@ class BioPDSN(pl.LightningModule):
 
     def prepare_data(self):
         self.df = pd.read_pickle(self.dfPath)
-        train, validate = train_test_split(df, test_size=0.2, random_state=42,stratify=self.df.id_class)
+        train, validate = train_test_split(self.df, test_size=0.2, random_state=42,stratify=self.df.id_class)
         self.trainDF = MaskDataset(train,self.imageShape[-2:])
         self.validateDF = MaskDataset(validate,self.imageShape[-2:])
 
@@ -144,13 +144,19 @@ class BioPDSN(pl.LightningModule):
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
-        # Falta agregar una capa FC al final con el numero de clases para obtener este loss
-        #cls_loss = self.loss_cls()
+        # version original
+        # f_masked, focc_masked, output, output_occ, f_diff, out = model(data, data_occ)
+
+        pred_clean = self.classifier(fc, labels)
+        loss_clean = self.loss_cls(pred_clean, labels)
         
-        # Hay que arreglar este loss, ver que es s_weight y ver si usar loss = cls_loss + 10*sia_loss o no
-        #loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        pred_occ = self.classifier(fc_occ, labels)
+        loss_occ = self.loss_cls(pred_occ, labels)
         
-        #tensorboardLogs = {'train_loss': loss}
+        #---------------------------------------------Backward----------------------------------------------#
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        
+        tensorboardLogs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboardLogs}
 
 
