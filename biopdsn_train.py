@@ -2,7 +2,11 @@
 #from easydict import EasyDict as edict
 from lib.Biopdsn import BioPDSN
 import argparse
-from facenet_pytorch import MTCNN
+
+from pytorch_lightning import Trainer
+from pytorch_lightning.callbacks import ModelCheckpoint
+
+import torch
 
 
 if __name__ == '__main__':
@@ -30,19 +34,15 @@ if __name__ == '__main__':
 
     biopdsn = BioPDSN(args).to(args.device)
     
-    #print(biopdsn.get_parameters())
-    for name, param in biopdsn.named_parameters():
-        if param.requires_grad == True:
-            if not 'mtcnn' in name:
-                #params_to_update.append(param)
-                print("Update \t", name)
-    '''
-    Freeze parameters
-    # we want to freeze the fc2 layer this time: only train fc1 and fc3
-    net.fc2.weight.requires_grad = False
-    net.fc2.bias.requires_grad = False
-
-    # passing only those parameters that explicitly requires grad
-    optimizer = optim.Adam(filter(lambda p: p.requires_grad, net.parameters()), lr=0.1)
-
-    '''
+    checkpoint_callback = ModelCheckpoint(
+        filepath='./checkpoints/weights.ckpt',
+        save_weights_only=True,
+        verbose=True,
+        monitor='val_acc_occ',
+        mode='max'
+    )
+    trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0,
+                      max_epochs=args.max_epochs,
+                      checkpoint_callback=checkpoint_callback,
+                      profiler=True)
+    trainer.fit(biopdsn)
