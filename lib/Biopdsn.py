@@ -49,7 +49,6 @@ class BioPDSN(pl.LightningModule):
         #model args 
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         self.features_shape = 512
-        self.device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
         
         #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)

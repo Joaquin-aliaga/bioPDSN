@@ -31,7 +31,7 @@ if __name__ == '__main__':
     parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
 
     args = parser.parse_args()
-    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
     args.device = device
 
     biopdsn = BioPDSN(args).to(device)
