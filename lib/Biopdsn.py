@@ -124,11 +124,15 @@ class BioPDSN(pl.LightningModule):
     def forward(self,source,target):
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
-        f_clean = torch.from_numpy(f_clean).to(torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu'))
-        f_occ = torch.from_numpy(f_occ).to(torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu'))
+        torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        f_clean = torch.from_numpy(f_clean).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+        f_occ = torch.from_numpy(f_occ).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
         # Begin Siamese branch
-        f_diff = torch.add(f_clean, -1.0, f_occ)
+        # actual: add(Tensor input, Number alpha, Tensor other, *, Tensor out)
+        # cambio: add(Tensor input, Tensor other, *, Number alpha, Tensor out)
+        #f_diff = torch.add(f_clean, -1.0, f_occ)
+        f_diff = torch.add(f_clean,f_occ,-1.0)
         f_diff = torch.abs(f_diff)
         mask = self.sia(f_diff)
         # End Siamese branch
@@ -170,6 +174,8 @@ class BioPDSN(pl.LightningModule):
         loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
         
         tensorboardLogs = {'train_loss': loss}
+        # new version of log (may use this)
+        #self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         return {'loss': loss, 'log': tensorboardLogs}
 
     def validation_step(self, batch, batch_idx):
