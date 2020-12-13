@@ -34,6 +34,7 @@ class Resnet():
     '''
     batch is a list of torch.tensor (aligned faces croped using mtcnn)
     '''
+    '''
     inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
     for img in batch:
@@ -43,6 +44,8 @@ class Resnet():
       print("Img shape after expand: ",img.shape)
       inputBlob[idx] = img
       idx+=1
+    '''
+    inputBlob = np.array(batch)
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
