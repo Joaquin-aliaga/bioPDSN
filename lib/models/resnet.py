@@ -36,17 +36,13 @@ class Resnet():
     '''
     inputBlob = np.zeros( (self.batch_size*len(batch), self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
-    k = 1
     for b in batch:
       for img in b:
-        print("Img type: ",type(img))
-        print("Img shape: ",img.shape)
-        #img = np.expand_dims(img, axis=0)
         inputBlob[idx] = img
         idx+=1
-
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
     features = self.net.model.get_outputs()[0].asnumpy()
+    print("Features shape: ",features.shape)
     return features  
