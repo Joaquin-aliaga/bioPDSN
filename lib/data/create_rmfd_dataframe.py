@@ -42,7 +42,7 @@ if __name__ == '__main__':
     merge['id_name'] = merge['id_name'].astype('category')
     merge['id_class'] = merge['id_name'].cat.codes
 
-    dfName = './merged_df.pickle'
+    dfName = './dataframe.pickle'
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
 

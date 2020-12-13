@@ -11,7 +11,7 @@ import torch
 
 if __name__ == '__main__':
     #data args
-    parser = argparse.ArgumentParser(description='for arcface test')
+    parser = argparse.ArgumentParser(description='Params for bioPDSN train')
     parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
 
     #train args
