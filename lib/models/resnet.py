@@ -32,22 +32,17 @@ class Resnet():
   
   def get_features(self,batch):
     '''
-    batch is a list of torch.tensor (aligned faces croped using mtcnn)
-    '''
+    batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''
     inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
     for img in batch:
       print("Img type: ",type(img))
       print("Img shape: ",img.shape)
-      img = np.expand_dims(img, axis=0)
-      print("Img shape after expand: ",img.shape)
+      #img = np.expand_dims(img, axis=0)
       inputBlob[idx] = img
       idx+=1
-    '''
-    print("Batch type: ",type(batch))
-    print("Batch len: ",len(batch))
-    inputBlob = np.array(batch)
+
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
     self.net.model.forward(db, is_train=False)
