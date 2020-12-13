@@ -30,6 +30,7 @@ args = {
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
+        self.device = args.device
         #data args
         self.dfPath = args.dfPath
         self.df = None
@@ -122,6 +123,8 @@ class BioPDSN(pl.LightningModule):
 
     def forward(self,source,target):
         f_clean,f_occ = self.get_features(source,target)
+        f_clean.to(self.device)
+        f_occ.to(self.device)
 
         # Begin Siamese branch
         f_diff = torch.add(f_clean, -1.0, f_occ)
