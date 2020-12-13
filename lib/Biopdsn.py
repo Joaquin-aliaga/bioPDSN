@@ -76,7 +76,7 @@ class BioPDSN(pl.LightningModule):
                 nn.init.constant_(m.weight,1)
                 nn.init.constant_(m.bias,0)
         
-        #self.freeze_layers()
+        self.freeze_layers()
         #self.prepare_data()
 
     def get_parameters(self,filter=None):
