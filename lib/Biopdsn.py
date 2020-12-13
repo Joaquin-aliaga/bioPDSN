@@ -134,14 +134,10 @@ class BioPDSN(pl.LightningModule):
         # End Siamese branch
 
         f_clean_masked = f_clean * mask
-        print("f_clean_masked shape: ",f_clean_masked.shape)
         f_occ_masked = f_occ * mask
-        print("f_occ_masked shape: ",f_occ_masked.shape)
-
+        
         fc = f_clean_masked.view(f_clean_masked.size(0), -1) #256*(512*7*6)
-        print("f_clean_masked shape after view: ",fc.shape)
         fc_occ = f_occ_masked.view(f_occ_masked.size(0), -1)
-        print("f_occ_masked shape after view: ",fc_occ.shape)
         fc = self.fc(fc)
         fc_occ = self.fc(fc_occ)
 
