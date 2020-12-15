@@ -1,13 +1,14 @@
 # bioPDSN
 Face verification system using Pairwise Differential Siamese Network [paper](https://arxiv.org/abs/1908.06290)
 
-## Requirements
+## System
+* Ubuntu 18
 * Python 3.6
-* Pytorch 1.7
-* facenet-pytorch
-* mxnet-cu101
-* pytorch-lightning
+* Cuda 10.1
 
+
+## Install dependencies
+`pip install -r requirements.txt`
 
 ## Train
 0. `git clone https://github.com/Joaquin-aliaga/bioPDSN.git`
@@ -17,3 +18,9 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 4. `cd ../..`
 5. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
 6. python biopdsn_train.py -num_class 403 -dfPath "./lib/data/dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64
+
+### Usefull guides
+* [Install Cuda10.1](https://medium.com/@exesse/cuda-10-1-installation-on-ubuntu-18-04-lts-d04f89287130)
+* Create requirements.txt -> `pip install pipreqs` -> `pipreqs .`
+* wget from Drive file: `wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O FILENAME`
+* wget from Dropbox: `curl -L <dropbox-link>?dl=1 > <file-name>`
