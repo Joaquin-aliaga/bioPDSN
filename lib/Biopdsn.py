@@ -121,7 +121,7 @@ class BioPDSN(pl.LightningModule):
         # actual: add(Tensor input, Number alpha, Tensor other, *, Tensor out)
         # cambio: add(Tensor input, Tensor other, *, Number alpha, Tensor out)
         #f_diff = torch.add(f_clean, -1.0, f_occ)
-        f_diff = torch.add(f_clean,f_occ,-1.0)
+        f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
         f_diff = torch.abs(f_diff)
         mask = self.sia(f_diff)
         # End Siamese branch
