@@ -22,5 +22,5 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 ### Usefull guides
 * [Install Cuda10.1](https://medium.com/@exesse/cuda-10-1-installation-on-ubuntu-18-04-lts-d04f89287130)
 * Create requirements.txt -> `pip install pipreqs` -> `pipreqs .`
-* wget from Drive file: `wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O FILENAME`
+* wget from Drive (large)file: `wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=FILEID' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=FILEID" -O FILENAME && rm -rf /tmp/cookies.txt`
 * wget from Dropbox: `curl -L <dropbox-link>?dl=1 > <file-name>`
