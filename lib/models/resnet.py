@@ -31,7 +31,7 @@ class Resnet():
     return net
   
   def get_features(self,batch):
-    print("Batch len: ",len(batch))
+    print("Batch (resnet): ",batch)
     '''
     batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''

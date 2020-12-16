@@ -47,9 +47,9 @@ if __name__ == '__main__':
     
     imageShape = [int(x) for x in args.input_size.split(',')]
         
-    mtcnn = MTCNN(image_size=imageShape[1], min_face_size=80, 
+    mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
                             device = device, post_process=args.mtcnn_norm,
-                            keep_all=args.keep_all)
+                            keep_all=False,select_largest=True)
 
     model = BioPDSN(args)
 
