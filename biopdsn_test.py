@@ -48,7 +48,9 @@ if __name__ == '__main__':
     
     imageShape = [int(x) for x in args.input_size.split(',')]
 
-    cos_sim = nn.CosineSimilarity()    
+    cos_sim = nn.CosineSimilarity()
+    if(args.mtcnn_norm):
+        print("mtcnn norm True!")  
     
     mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
                             device = device, post_process=args.mtcnn_norm,
@@ -66,6 +68,7 @@ if __name__ == '__main__':
     pd_names = ['id','ImgEnroll','ImgQuery']
     root_folder_pos = args.test_folder+'/mascarillas_positivos/'
     root_folder_neg = args.test_folder+'/mascarillas_negativos/'
+    
     print("Loading dataframes")
     df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
     df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
@@ -85,8 +88,6 @@ if __name__ == '__main__':
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
-    print("fc pos shape:" ,fc_pos.shape)
-    print("fc pos occ shape:" ,fc_occ_pos.shape)
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
 

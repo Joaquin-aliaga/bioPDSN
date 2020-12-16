@@ -38,7 +38,7 @@ class BioPDSN(pl.LightningModule):
         
         #model args 
         self.imageShape = [int(x) for x in args.input_size.split(',')]
-        self.features_shape = 512
+        self.features_shape = args.embedding_size
         
         #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
@@ -67,8 +67,8 @@ class BioPDSN(pl.LightningModule):
         self.fc = nn.Sequential(
             nn.BatchNorm1d(self.features_shape * 7 * 7),
             #nn.Dropout(p=0),
-            nn.Linear(self.features_shape * 7 * 7, 512),
-            nn.BatchNorm1d(512),
+            nn.Linear(self.features_shape * 7 * 7, self.features_shape),
+            nn.BatchNorm1d(self.features_shape),
         )
         # Weight initialization
         for m in self.modules():
