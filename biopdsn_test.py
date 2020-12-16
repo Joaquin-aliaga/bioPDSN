@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 from lib.Biopdsn import BioPDSN
 from lib.models.layer import cosine_sim
 import argparse
@@ -48,19 +49,30 @@ if __name__ == '__main__':
         print("Model weights loaded!")
     model = model.to(device)
     model.eval()
-    root_folder = args.test_folder+'/mascarillas_positivos/'
-    print("Loading dataframe")
-    df = pd.read_csv(root_folder+'pairs.csv')
-    print("Dataframe loaded!")
-    row = df.sample().iloc[0]
+    root_folder_pos = args.test_folder+'/mascarillas_positivos/'
+    root_folder_neg = args.test_folder+'/mascarillas_negativos/'
+    print("Loading dataframes")
+    df_pos = pd.read_csv(root_folder_pos+'pairs.csv')
+    df_neg = pd.read_csv(root_folder_neg+'pairs.csv')
+    print("Dataframes loaded!")
+    row_pos = df_pos.sample().iloc[0]
+    source_pos = cv2.imdecode(root_folder_pos + np.fromfile(row['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(root_folder_pos + np.fromfile(row['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
-    source = cv2.imdecode(root_folder + np.fromfile(row['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target = cv2.imdecode(root_folder + np.fromfile(row['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
-    f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = model(source,target)
+    sim = cosine_sim(fc_pos,fc_occ_pos)
+    print("Similitud positivos: ",sim)
 
-    sim = cosine_sim(fc,fc_occ)
-    print("Similitud: ",sim)
+    row_neg = df_neg.sample().iloc[0]
+    source_neg = cv2.imdecode(root_folder_neg + np.fromfile(row['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_neg = cv2.imdecode(root_folder_neg + np.fromfile(row['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+
+    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
+
+    sim = cosine_sim(fc_neg,fc_occ_neg)
+    print("Similitud negativos: ",sim)
+
 
         
 
