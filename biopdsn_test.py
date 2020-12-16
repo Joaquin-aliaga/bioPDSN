@@ -76,7 +76,7 @@ if __name__ == '__main__':
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
-    sim = cosine_sim(fc_pos,fc_occ_pos)
+    sim = cosine_sim(fc_pos,fc_occ_pos,dim=0)
     print("Similitud positivos: ",sim)
 
     row_neg = df_neg.sample().iloc[0]
@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
-    sim_neg = cosine_sim(fc_neg,fc_occ_neg)
+    sim_neg = cosine_sim(fc_neg,fc_occ_neg,dim=0)
     print("Similitud negativos: ",sim_neg)
 
 
