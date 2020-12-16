@@ -42,10 +42,12 @@ if __name__ == '__main__':
     model = BioPDSN(args)
 
     if args.model_resume:
-
+        print("Loading model weights (trained)...")
         model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
     
     model = model.to(device)
     model.eval()
+    print("Success!")
+    
 
 
