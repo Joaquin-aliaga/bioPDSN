@@ -77,7 +77,7 @@ if __name__ == '__main__':
     #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
     #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     source_pos = transformations(source_pos)
     target_pos = transformations(target_pos)
