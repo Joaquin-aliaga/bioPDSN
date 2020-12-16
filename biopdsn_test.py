@@ -58,8 +58,8 @@ if __name__ == '__main__':
     df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
-    source_pos = cv2.imdecode(root_folder_pos + np.fromfile(row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(root_folder_pos + np.fromfile(row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
