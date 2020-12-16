@@ -89,11 +89,10 @@ if __name__ == '__main__':
 
     print("fc pos shape:" ,fc_pos.shape)
     print("fc pos occ shape:" ,fc_occ_pos.shape)
-    sim = cosine_sim(fc_pos,fc_occ_pos,dim=1)
+    sim = cosine_sim(fc_pos,fc_occ_pos,dim=0)
     print("Similitud positivos: ",sim)
-    '''
 
-    row_neg = df_neg.sample().iloc[0]
+    row_neg = df_neg.iloc[0]
     source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
     target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
 
@@ -104,7 +103,6 @@ if __name__ == '__main__':
 
     sim_neg = cosine_sim(fc_neg,fc_occ_neg,dim=0)
     print("Similitud negativos: ",sim_neg)
-    '''
 
 
         
