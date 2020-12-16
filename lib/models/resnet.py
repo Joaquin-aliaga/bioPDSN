@@ -38,7 +38,7 @@ class Resnet():
     '''
     inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
     idx = 0
-    
+    batch = batch.numpy()
     for img in batch:
       inputBlob[idx] = img
       idx+=1
