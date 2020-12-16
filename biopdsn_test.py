@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 from lib.Biopdsn import BioPDSN
-from lib.models.layer import cosine_sim
+from lib.models.layer import cosine_sim, MarginCosineProduct
 import argparse
 import torch
 from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
@@ -76,6 +76,9 @@ if __name__ == '__main__':
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
+    print("fc pos shape:" ,fc_pos.shape)
+    print("fc pos occ shape:" ,fc_occ_pos.shape)
+    '''
     sim = cosine_sim(fc_pos,fc_occ_pos,dim=0)
     print("Similitud positivos: ",sim)
 
@@ -90,6 +93,7 @@ if __name__ == '__main__':
 
     sim_neg = cosine_sim(fc_neg,fc_occ_neg,dim=0)
     print("Similitud negativos: ",sim_neg)
+    '''
 
 
         
