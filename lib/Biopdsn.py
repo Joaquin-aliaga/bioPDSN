@@ -42,6 +42,7 @@ class BioPDSN(pl.LightningModule):
         
         #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
+        '''
         if(args.use_mtcnn == "False"):
             self.use_mtcnn = False
         else:
@@ -53,6 +54,7 @@ class BioPDSN(pl.LightningModule):
         else:
             self.mtcnn = None
         self.resnet = Resnet(args)
+        '''
         
         # Mask Generator
         self.sia = nn.Sequential(
@@ -78,16 +80,16 @@ class BioPDSN(pl.LightningModule):
                 nn.init.constant_(m.weight,1)
                 nn.init.constant_(m.bias,0)
         
-        self.freeze_layers()
+        #self.freeze_layers('mtcnn')
         
     def get_parameters(self,filter=None):
         for name,param in self.named_parameters():
             if(filter is not None and not filter in name):
                 print("Parametro: ",name)
 
-    def freeze_layers(self):
+    def freeze_layers(self,filter):
         for name, param in self.named_parameters():
-            if 'mtcnn' in name:
+            if filter in name:
                 param.requires_grad = False
     
     def prepare_data(self):
@@ -104,8 +106,10 @@ class BioPDSN(pl.LightningModule):
     
     def get_features(self,batch):
         #batch = [imgs]
+        '''
         if(self.use_mtcnn):
             batch = self.get_faces(batch)
+        '''
         features = self.resnet.get_features(batch) #type(features) = numpy ndarray
 
         return features

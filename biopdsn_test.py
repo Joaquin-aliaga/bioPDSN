@@ -7,6 +7,9 @@ import argparse
 import torch
 from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 import cv2
+from facenet_pytorch import MTCNN
+from PIL import Image
+
 
 if __name__ == '__main__':
     #data args
@@ -41,6 +44,12 @@ if __name__ == '__main__':
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
+    
+    imageShape = [int(x) for x in args.input_size.split(',')]
+        
+    mtcnn = MTCNN(image_size=imageShape[1], min_face_size=80, 
+                            device = device, post_process=args.mtcnn_norm,
+                            keep_all=args.keep_all)
 
     model = BioPDSN(args)
 
@@ -51,11 +60,6 @@ if __name__ == '__main__':
     model = model.to(device)
     model.eval()
 
-    transformations = Compose([
-            ToPILImage(),
-            ToTensor(), # [0, 1]
-        ])
-
     pd_names = ['id','ImgEnroll','ImgQuery']
     root_folder_pos = args.test_folder+'/mascarillas_positivos/'
     root_folder_neg = args.test_folder+'/mascarillas_negativos/'
@@ -64,10 +68,11 @@ if __name__ == '__main__':
     df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
-    source_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    source_pos = transformations(source_pos)
-    target_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = transformations(target_pos)
+    source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
+
+    source_pos = mtcnn(source_pos)
+    target_pos = mtcnn(target_pos)
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
@@ -75,15 +80,16 @@ if __name__ == '__main__':
     print("Similitud positivos: ",sim)
 
     row_neg = df_neg.sample().iloc[0]
-    source_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    source_neg = transformations(source_neg)
-    target_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_neg = transformations(target_neg)
+    source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
+    target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
+
+    source_neg = mtcnn(source_neg)
+    target_neg = mtcnn(target_neg)
 
     f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
-    sim = cosine_sim(fc_neg,fc_occ_neg)
-    print("Similitud negativos: ",sim)
+    sim_neg = cosine_sim(fc_neg,fc_occ_neg)
+    print("Similitud negativos: ",sim_neg)
 
 
         
