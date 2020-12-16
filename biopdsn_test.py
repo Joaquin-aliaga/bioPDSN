@@ -27,7 +27,7 @@ if __name__ == '__main__':
     #model args
     parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=True,type=bool)
     parser.add_argument("-model_weights","--model_weights",help="Path to model (trained) weights",default=None,type=str)
-    parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="True",type=str)
+    parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     #parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)

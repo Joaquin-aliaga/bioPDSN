@@ -53,8 +53,8 @@ class BioPDSN(pl.LightningModule):
                             keep_all=args.keep_all)
         else:
             self.mtcnn = None
-        self.resnet = Resnet(args)
         '''
+        self.resnet = Resnet(args)
         
         # Mask Generator
         self.sia = nn.Sequential(
