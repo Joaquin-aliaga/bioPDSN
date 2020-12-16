@@ -67,8 +67,8 @@ if __name__ == '__main__':
     print("Similitud positivos: ",sim)
 
     row_neg = df_neg.sample().iloc[0]
-    source_neg = cv2.imdecode(root_folder_neg + np.fromfile(row_neg['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_neg = cv2.imdecode(root_folder_neg + np.fromfile(row_neg['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
