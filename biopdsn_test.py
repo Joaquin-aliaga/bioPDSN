@@ -5,6 +5,7 @@ from lib.Biopdsn import BioPDSN
 from lib.models.layer import cosine_sim
 import argparse
 import torch
+from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 import cv2
 
 if __name__ == '__main__':
@@ -50,6 +51,11 @@ if __name__ == '__main__':
     model = model.to(device)
     model.eval()
 
+    transformations = Compose([
+            ToPILImage(),
+            ToTensor(), # [0, 1]
+        ])
+
     pd_names = ['id','ImgEnroll','ImgQuery']
     root_folder_pos = args.test_folder+'/mascarillas_positivos/'
     root_folder_neg = args.test_folder+'/mascarillas_negativos/'
@@ -59,7 +65,9 @@ if __name__ == '__main__':
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
     source_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_pos = transformations(source_pos)
     target_pos = cv2.imdecode(np.fromfile(root_folder_pos+row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = transformations(target_pos)
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
@@ -68,7 +76,9 @@ if __name__ == '__main__':
 
     row_neg = df_neg.sample().iloc[0]
     source_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_neg = transformations(source_neg)
     target_neg = cv2.imdecode(np.fromfile(root_folder_neg + row_neg['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_neg = transformations(target_neg)
 
     f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
