@@ -46,6 +46,11 @@ if __name__ == '__main__':
     args.device = device
     
     imageShape = [int(x) for x in args.input_size.split(',')]
+
+    transformations = Compose([
+            ToPILImage(),
+            ToTensor(), # [0, 1]
+        ])
         
     mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
                             device = device, post_process=args.mtcnn_norm,
@@ -67,10 +72,15 @@ if __name__ == '__main__':
     df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
     df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframes loaded!")
+    
     row_pos = df_pos.sample().iloc[0]
-    source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    print("Original size: ",source_pos.size)
-    target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
+    #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
+    source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+
+    source_pos = transformations(source_pos)
+    target_pos = transformations(target_pos)
 
     source_pos = mtcnn(source_pos)
     target_pos = mtcnn(target_pos)
