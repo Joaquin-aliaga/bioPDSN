@@ -8,7 +8,7 @@ import torch
 if __name__ == '__main__':
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
-    parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
+    parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",default=None,type=str)
     parser.add_argument("-test_folder","--test_folder",help="Path to test folder",default=None,type=str)
 
     #train args
