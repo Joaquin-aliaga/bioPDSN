@@ -69,10 +69,12 @@ if __name__ == '__main__':
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
     source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    print("Original shape: ",source_pos.shape)
     target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
 
     source_pos = mtcnn(source_pos)
     target_pos = mtcnn(target_pos)
+    print("Source shape after mtcnn: ",source_pos.shape)
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
