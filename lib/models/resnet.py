@@ -40,7 +40,9 @@ class Resnet():
         idx+=1
 
     else: #batch with one element
-      inputBlob = batch.numpy()
+      batch = batch.numpy()
+      batch = np.expand_dims(batch,0) 
+      inputBlob = batch
       
     data = mx.nd.array(inputBlob)
     db = mx.io.DataBatch(data=(data,))
