@@ -113,7 +113,7 @@ class BioPDSN(pl.LightningModule):
     def forward(self,source,target):
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
-        torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        #torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         f_clean = torch.from_numpy(f_clean).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
         f_occ = torch.from_numpy(f_occ).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
 
