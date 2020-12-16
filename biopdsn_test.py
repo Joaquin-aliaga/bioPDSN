@@ -75,7 +75,7 @@ if __name__ == '__main__':
     
     row_pos = df_pos.sample().iloc[0]
     source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    print("source shape after load: ",source_pos.shape)
+    print("source size after load: ",source_pos.size)
     target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     #source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     #target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
