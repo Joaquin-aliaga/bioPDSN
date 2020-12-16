@@ -110,11 +110,13 @@ class BioPDSN(pl.LightningModule):
         if(self.use_mtcnn):
             batch = self.get_faces(batch)
         '''
+        # quizas deba agregar aca un batch.toTensor()
         features = self.resnet.get_features(batch) #type(features) = numpy ndarray
 
         return features
 
     def forward(self,source,target):
+        print("Type of source in biopdsn: ",type(source))
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
         #torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

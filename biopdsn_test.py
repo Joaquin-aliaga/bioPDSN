@@ -74,17 +74,17 @@ if __name__ == '__main__':
     print("Dataframes loaded!")
     
     row_pos = df_pos.sample().iloc[0]
-    #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
-    source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
+    #source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    #target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     source_pos = mtcnn(source_pos)
     target_pos = mtcnn(target_pos)
-    print("Source shape after mtcnn: ",source_pos.shape)
+    print("Source type after mtcnn: ",type(source_pos))
 
-    source_pos = transformations(source_pos)
-    target_pos = transformations(target_pos)
+    #source_pos = transformations(source_pos)
+    #target_pos = transformations(target_pos)
 
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
