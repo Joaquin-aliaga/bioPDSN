@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument("-test_folder","--test_folder",help="Path to test folder",default=None,type=str)
 
     #train args
-    parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
+    parser.add_argument("-b","--batch_size",help="batch size", default=1,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
     parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
@@ -78,9 +78,9 @@ if __name__ == '__main__':
 
     print("fc pos shape:" ,fc_pos.shape)
     print("fc pos occ shape:" ,fc_occ_pos.shape)
-    '''
-    sim = cosine_sim(fc_pos,fc_occ_pos,dim=0)
+    sim = cosine_sim(fc_pos,fc_occ_pos,dim=1)
     print("Similitud positivos: ",sim)
+    '''
 
     row_neg = df_neg.sample().iloc[0]
     source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
