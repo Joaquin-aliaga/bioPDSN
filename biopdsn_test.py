@@ -49,11 +49,13 @@ if __name__ == '__main__':
         print("Model weights loaded!")
     model = model.to(device)
     model.eval()
+
+    pd_names = ['id','ImgEnroll','ImgQuery']
     root_folder_pos = args.test_folder+'/mascarillas_positivos/'
     root_folder_neg = args.test_folder+'/mascarillas_negativos/'
     print("Loading dataframes")
-    df_pos = pd.read_csv(root_folder_pos+'pairs.csv')
-    df_neg = pd.read_csv(root_folder_neg+'pairs.csv')
+    df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
+    df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
     source_pos = cv2.imdecode(root_folder_pos + np.fromfile(row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
