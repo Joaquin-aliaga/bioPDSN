@@ -27,13 +27,13 @@ if __name__ == '__main__':
     #model args
     parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=True,type=bool)
     parser.add_argument("-model_weights","--model_weights",help="Path to model (trained) weights",default=None,type=str)
-    parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
+    #parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     #parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
-    parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=False,type=bool)
-    parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
+    #parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=False,type=bool)
+    #parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
 
     args = parser.parse_args()
     '''
@@ -75,14 +75,16 @@ if __name__ == '__main__':
     
     row_pos = df_pos.sample().iloc[0]
     source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    print("source shape after load: ",source_pos.shape)
     target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     #source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     #target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     source_pos = mtcnn(source_pos)
-    target_pos = mtcnn(target_pos)
+    print("source shape after mtcnn: ",source_pos.shape)
     print("Source type after mtcnn: ",type(source_pos))
-
+    target_pos = mtcnn(target_pos)
+    
     #source_pos = transformations(source_pos)
     #target_pos = transformations(target_pos)
 

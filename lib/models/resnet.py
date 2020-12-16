@@ -32,6 +32,7 @@ class Resnet():
   
   def get_features(self,batch):
     print("type of batch inside resnet: ",type(batch))
+    print("source shape inside resnet: ",batch.shape)
     '''
     batch is a list of torch.tensor items (aligned faces croped using mtcnn)
     '''
