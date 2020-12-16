@@ -2,9 +2,10 @@ import os
 import pandas as pd
 import numpy as np
 from lib.Biopdsn import BioPDSN
-from lib.models.layer import cosine_sim, MarginCosineProduct
+#from lib.models.layer import cosine_sim, MarginCosineProduct
 import argparse
 import torch
+import torch.nn as nn
 from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 import cv2
 from facenet_pytorch import MTCNN
@@ -47,11 +48,8 @@ if __name__ == '__main__':
     
     imageShape = [int(x) for x in args.input_size.split(',')]
 
-    transformations = Compose([
-            ToPILImage(),
-            ToTensor(), # [0, 1]
-        ])
-        
+    cos_sim = nn.CosineSimilarity()    
+    
     mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
                             device = device, post_process=args.mtcnn_norm,
                             keep_all=False,select_largest=True)
@@ -89,7 +87,7 @@ if __name__ == '__main__':
 
     print("fc pos shape:" ,fc_pos.shape)
     print("fc pos occ shape:" ,fc_occ_pos.shape)
-    sim = cosine_sim(fc_pos,fc_occ_pos,dim=0)
+    sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
 
     row_neg = df_neg.iloc[0]
@@ -101,7 +99,7 @@ if __name__ == '__main__':
 
     f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
-    sim_neg = cosine_sim(fc_neg,fc_occ_neg,dim=0)
+    sim_neg = cos_sim(fc_neg,fc_occ_neg)
     print("Similitud negativos: ",sim_neg)
 
 
