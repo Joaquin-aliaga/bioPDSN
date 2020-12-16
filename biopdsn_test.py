@@ -69,7 +69,7 @@ if __name__ == '__main__':
     print("Dataframes loaded!")
     row_pos = df_pos.sample().iloc[0]
     source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    print("Original shape: ",source_pos.shape)
+    print("Original size: ",source_pos.size)
     target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
 
     source_pos = mtcnn(source_pos)
