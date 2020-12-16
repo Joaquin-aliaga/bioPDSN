@@ -73,7 +73,7 @@ if __name__ == '__main__':
     df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframes loaded!")
     
-    row_pos = df_pos.sample().iloc[0]
+    row_pos = df_pos.iloc[0]
     source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
     target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     #source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
