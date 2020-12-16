@@ -49,8 +49,9 @@ if __name__ == '__main__':
     model = model.to(device)
     model.eval()
     root_folder = args.test_folder+'/mascarillas_positivos/'
+    print("Loading dataframe")
     df = pd.read_csv(root_folder+'pairs.csv')
-
+    print("Dataframe loaded!")
     row = df.sample().iloc[0]
 
     source = cv2.imdecode(root_folder + np.fromfile(row['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
