@@ -153,13 +153,16 @@ class BioPDSN(pl.LightningModule):
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
-        score_clean = self.classifier(fc, labels)
-        loss_clean = self.loss_cls(score_clean, labels)
+        #score_clean = self.classifier(fc, labels)
+        #loss_clean = self.loss_cls(score_clean, labels)
         
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        lamb = 10
+        
+        #loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
+        loss = loss_occ + lamb * sia_loss
         
         tensorboardLogs = {'train_loss': loss}
         # new version of log (may use this)
@@ -172,13 +175,14 @@ class BioPDSN(pl.LightningModule):
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
-        score_clean = self.classifier(fc, labels)
-        loss_clean = self.loss_cls(score_clean, labels)
+        #score_clean = self.classifier(fc, labels)
+        #loss_clean = self.loss_cls(score_clean, labels)
         
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
-        
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        lamb = 10
+        #loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        loss = loss_occ + lamb * sia_loss 
         
         _, pred_clean = torch.max(score_clean, dim=1)
         acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())

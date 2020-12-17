@@ -42,7 +42,7 @@ if __name__ == '__main__':
     biopdsn = BioPDSN(args).to(device)
     
     checkpoint_callback = ModelCheckpoint(
-        filepath='./checkpoints/weights.ckpt',
+        filepath='./checkpoints_no_clean_loss/weights.ckpt',
         save_weights_only=True,
         verbose=True,
         monitor='val_acc_occ',
