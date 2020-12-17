@@ -98,7 +98,7 @@ if __name__ == '__main__':
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
 
-    row_neg = df.iloc[668]
+    row_neg = df.iloc[393911]
     target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     target_neg = transformations(target_neg)
