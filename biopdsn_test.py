@@ -55,10 +55,10 @@ if __name__ == '__main__':
         ])
 
     cos_sim = nn.CosineSimilarity()
-    softmax = nn.Softmax()
+    #softmax = nn.Softmax()
 
     if(args.mtcnn_norm):
-        print("mtcnn norm True!")  
+        print("mtcnn norm: ",args.mtcnn_norm)  
     
     mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
                             device = device, post_process=args.mtcnn_norm,
@@ -74,58 +74,61 @@ if __name__ == '__main__':
     model.eval()
 
     pd_names = ['id','ImgEnroll','ImgQuery']
-    #root_folder_pos = args.test_folder+'/mascarillas_positivos/'
-    #root_folder_neg = args.test_folder+'/mascarillas_negativos/'
+    root_folder_pos = args.test_folder+'/positivos_faciles/'
+    root_folder_neg = args.test_folder+'/negativos_faciles/'
 
     print("Loading dataframe")
-    df = pd.read_pickle(args.rmfd_path + 'dataframe.pickle')
-    #df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
-    #df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
+    #df = pd.read_pickle(args.rmfd_path + 'dataframe.pickle')
+    df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
+    df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframe loaded!")
     
-    row_pos = df.iloc[0]
-    #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
-    source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    row_pos = df_pos.iloc[0]
+    source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
+    target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
+    #source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    #target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     #label_pos = torch.tensor([row_pos['id_class']], dtype=torch.long).to(device)
-    label_pos = torch.tensor(40, dtype=torch.long).to(device)
-    source_pos = transformations(source_pos)
-    target_pos = transformations(target_pos)
+    #label_pos = torch.tensor(40, dtype=torch.long).to(device)
+    #source_pos = transformations(source_pos)
+    #target_pos = transformations(target_pos)
 
-    #source_pos = mtcnn(source_pos)
-    #target_pos = mtcnn(target_pos)
+    source_pos = mtcnn(source_pos)
+    target_pos = mtcnn(target_pos)
     
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
+    '''
     score_pos = model.classifier(fc_occ_pos, label_pos)
     valor_maximo, pred_pos = torch.max(score_pos, dim=1)
     score_softmax = softmax(fc_occ_pos)
     _, pred_pos_softmax = torch.max(score_softmax, dim=1)
     print("Clase positivo: {}, Prediccion: {}, Prediccion Softmax: {}".format(label_pos,pred_pos,pred_pos_softmax))
-    print("Valor maximo: ",valor_maximo)    
+    '''  
         
-
-    row_neg = df.iloc[368582]
-    target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    label_neg = torch.tensor([row_neg['id_class']], dtype=torch.long).to(device)
+    row_neg = df_neg.iloc[0]
+    source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
+    target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
+    #target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    #label_neg = torch.tensor([row_neg['id_class']], dtype=torch.long).to(device)
     
-    target_neg = transformations(target_neg)
-    #source_neg = mtcnn(source_neg)
-    #target_neg = mtcnn(target_neg)
+    #target_neg = transformations(target_neg)
+    source_neg = mtcnn(source_neg)
+    target_neg = mtcnn(target_neg)
 
-    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_pos,target_neg)
+    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
 
     sim_neg = cos_sim(fc_neg,fc_occ_neg)
     print("Similitud negativos: ",sim_neg)
+    '''
     score_neg = model.classifier(fc_occ_neg, label_neg)
     _, pred_neg = torch.max(score_neg, dim=1)
     score_softmax = softmax(fc_occ_neg)
     _, pred_neg_softmax = torch.max(score_softmax, dim=1)
     print("Clase negativo: {}, Prediccion: {}, Prediccion softmax: {}".format(label_neg,pred_neg,pred_neg_softmax))
-    
+    '''
 
 
         
