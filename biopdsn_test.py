@@ -58,6 +58,7 @@ if __name__ == '__main__':
     #softmax = nn.Softmax()
     mtcnn_norm = None
     if(args.mtcnn_norm == 1):
+        print("Using normalization after mtcnn")
         mtcnn_norm = True
     else:
         mtcnn_norm = False  
