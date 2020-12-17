@@ -98,19 +98,17 @@ if __name__ == '__main__':
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
 
-    '''
-    row_neg = df_neg.iloc[0]
-    source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
-    target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
+    row_neg = df.iloc[668]
+    target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
-    source_neg = mtcnn(source_neg)
-    target_neg = mtcnn(target_neg)
+    target_neg = transformations(target_neg)
+    #source_neg = mtcnn(source_neg)
+    #target_neg = mtcnn(target_neg)
 
-    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
+    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_pos,target_neg)
 
     sim_neg = cos_sim(fc_neg,fc_occ_neg)
     print("Similitud negativos: ",sim_neg)
-    '''
 
 
         
