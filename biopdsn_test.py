@@ -17,7 +17,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
     parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",default=None,type=str)
     parser.add_argument("-test_folder","--test_folder",help="Path to test folder",default=None,type=str)
-
+    parser.add_argument("-rmfd_path","--rmfd_path",help="Path to RMFD dataset",default=None,type=str)
     #train args
     parser.add_argument("-b","--batch_size",help="batch size", default=1,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
     transformations = Compose([
             ToPILImage(),
-            Resize((input_size[0], input_size[1])),
+            Resize((112, 112)),
             ToTensor(), # [0, 1]
         ])
 
@@ -75,22 +75,23 @@ if __name__ == '__main__':
     root_folder_pos = args.test_folder+'/mascarillas_positivos/'
     root_folder_neg = args.test_folder+'/mascarillas_negativos/'
 
-    print("Loading dataframes")
-    df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
-    df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
-    print("Dataframes loaded!")
+    print("Loading dataframe")
+    df = pd.read_pickle(args.rmfd_path + 'dataframe.pickle')
+    #df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
+    #df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
+    print("Dataframe loaded!")
     
     row_pos = df_pos.iloc[0]
     #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
     #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
-    source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgEnroll'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['ImgQuery'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     source_pos = transformations(source_pos)
     target_pos = transformations(target_pos)
 
-    source_pos = mtcnn(source_pos)
-    target_pos = mtcnn(target_pos)
+    #source_pos = mtcnn(source_pos)
+    #target_pos = mtcnn(target_pos)
     
     #source_pos = transformations(source_pos)
     #target_pos = transformations(target_pos)
@@ -100,6 +101,7 @@ if __name__ == '__main__':
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
 
+    '''
     row_neg = df_neg.iloc[0]
     source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
     target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
@@ -111,6 +113,7 @@ if __name__ == '__main__':
 
     sim_neg = cos_sim(fc_neg,fc_occ_neg)
     print("Similitud negativos: ",sim_neg)
+    '''
 
 
         
