@@ -86,7 +86,7 @@ if __name__ == '__main__':
     #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-
+    label_pos = torch.tensor([row_pos['id_class']], dtype=torch.long)
     source_pos = transformations(source_pos)
     target_pos = transformations(target_pos)
 
@@ -97,10 +97,16 @@ if __name__ == '__main__':
 
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
+    score_pos = model.classifier(fc_occ_pos, label_pos)
+    _, pred_pos = torch.max(score_clean, dim=1)
+    print("Clase positivo: {}, Prediccion: {}".format(label_pos,pred_pos))
+        
+        
 
     row_neg = df.iloc[393911]
     target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-
+    label_neg = torch.tensor([row_neg['id_class']], dtype=torch.long)
+    
     target_neg = transformations(target_neg)
     #source_neg = mtcnn(source_neg)
     #target_neg = mtcnn(target_neg)
@@ -109,6 +115,10 @@ if __name__ == '__main__':
 
     sim_neg = cos_sim(fc_neg,fc_occ_neg)
     print("Similitud negativos: ",sim_neg)
+    score_neg = model.classifier(fc_occ_neg, label_neg)
+    _, pred_neg = torch.max(score_neg, dim=1)
+    print("Clase negativo: {}, Prediccion: {}".format(label_neg,pred_neg))
+    
 
 
         
