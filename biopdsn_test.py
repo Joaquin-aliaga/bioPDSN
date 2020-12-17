@@ -103,7 +103,7 @@ if __name__ == '__main__':
         
         
 
-    row_neg = df.iloc[393911]
+    row_neg = df.iloc[368582]
     target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     label_neg = torch.tensor([row_neg['id_class']], dtype=torch.long).to(device)
     
