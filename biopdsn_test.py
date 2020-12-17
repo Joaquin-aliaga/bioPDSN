@@ -33,7 +33,7 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     #parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
-    parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=False,type=bool)
+    parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether use normalization after mtcnn (0=disable, 1=available)",default=0,type=int)
     parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
 
     args = parser.parse_args()
@@ -56,12 +56,14 @@ if __name__ == '__main__':
 
     cos_sim = nn.CosineSimilarity()
     #softmax = nn.Softmax()
-
-    if(args.mtcnn_norm):
-        print("mtcnn norm: ",args.mtcnn_norm)  
+    mtcnn_norm = None
+    if(args.mtcnn_norm == 1):
+        mtcnn_norm = True
+    else:
+        mtcnn_norm = False  
     
     mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
-                            device = device, post_process=args.mtcnn_norm,
+                            device = device, post_process=mtcnn_norm,
                             keep_all=False,select_largest=True)
 
     model = BioPDSN(args)
@@ -108,7 +110,7 @@ if __name__ == '__main__':
     print("Clase positivo: {}, Prediccion: {}, Prediccion Softmax: {}".format(label_pos,pred_pos,pred_pos_softmax))
     '''  
         
-    row_neg = df_neg.iloc[0]
+    row_neg = df_neg.iloc[2]
     source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
     target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
     #target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
