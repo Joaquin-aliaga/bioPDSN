@@ -98,7 +98,7 @@ if __name__ == '__main__':
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
     score_pos = model.classifier(fc_occ_pos, label_pos)
-    _, pred_pos = torch.max(score_clean, dim=1)
+    _, pred_pos = torch.max(score_pos, dim=1)
     print("Clase positivo: {}, Prediccion: {}".format(label_pos,pred_pos))
         
         
