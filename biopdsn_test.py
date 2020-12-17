@@ -55,6 +55,8 @@ if __name__ == '__main__':
         ])
 
     cos_sim = nn.CosineSimilarity()
+    softmax = nn.Softmax()
+
     if(args.mtcnn_norm):
         print("mtcnn norm True!")  
     
@@ -99,7 +101,9 @@ if __name__ == '__main__':
     print("Similitud positivos: ",sim)
     score_pos = model.classifier(fc_occ_pos, label_pos)
     _, pred_pos = torch.max(score_pos, dim=1)
-    print("Clase positivo: {}, Prediccion: {}".format(label_pos,pred_pos))
+    score_softmax = softmax(fc_occ_pos)
+    _, pred_pos_softmax = torch.max(score_softmax, dim=1)
+    print("Clase positivo: {}, Prediccion: {}, Prediccion Softmax: {}".format(label_pos,pred_pos,pred_pos_softmax))
         
         
 
@@ -117,7 +121,9 @@ if __name__ == '__main__':
     print("Similitud negativos: ",sim_neg)
     score_neg = model.classifier(fc_occ_neg, label_neg)
     _, pred_neg = torch.max(score_neg, dim=1)
-    print("Clase negativo: {}, Prediccion: {}".format(label_neg,pred_neg))
+    score_softmax = softmax(fc_occ_neg)
+    _, pred_neg_softmax = torch.max(score_softmax, dim=1)
+    print("Clase negativo: {}, Prediccion: {}, Prediccion softmax: {}".format(label_neg,pred_neg,pred_neg_softmax))
     
 
 
