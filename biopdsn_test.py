@@ -88,7 +88,8 @@ if __name__ == '__main__':
     #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
     source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
     target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    label_pos = torch.tensor([row_pos['id_class']], dtype=torch.long).to(device)
+    #label_pos = torch.tensor([row_pos['id_class']], dtype=torch.long).to(device)
+    label_pos = torch.tensor(40, dtype=torch.long).to(device)
     source_pos = transformations(source_pos)
     target_pos = transformations(target_pos)
 
