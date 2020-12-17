@@ -72,8 +72,8 @@ if __name__ == '__main__':
     model.eval()
 
     pd_names = ['id','ImgEnroll','ImgQuery']
-    root_folder_pos = args.test_folder+'/mascarillas_positivos/'
-    root_folder_neg = args.test_folder+'/mascarillas_negativos/'
+    #root_folder_pos = args.test_folder+'/mascarillas_positivos/'
+    #root_folder_neg = args.test_folder+'/mascarillas_negativos/'
 
     print("Loading dataframe")
     df = pd.read_pickle(args.rmfd_path + 'dataframe.pickle')
@@ -81,11 +81,11 @@ if __name__ == '__main__':
     #df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
     print("Dataframe loaded!")
     
-    row_pos = df_pos.iloc[0]
+    row_pos = df.iloc[0]
     #source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
     #target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
-    source_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    target_pos = cv2.imdecode(np.fromfile(root_folder_pos + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+    target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 
     source_pos = transformations(source_pos)
     target_pos = transformations(target_pos)
@@ -93,9 +93,6 @@ if __name__ == '__main__':
     #source_pos = mtcnn(source_pos)
     #target_pos = mtcnn(target_pos)
     
-    #source_pos = transformations(source_pos)
-    #target_pos = transformations(target_pos)
-
     f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
 
     sim = cos_sim(fc_pos,fc_occ_pos)
