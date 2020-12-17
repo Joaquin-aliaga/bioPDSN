@@ -101,11 +101,11 @@ if __name__ == '__main__':
     sim = cos_sim(fc_pos,fc_occ_pos)
     print("Similitud positivos: ",sim)
     score_pos = model.classifier(fc_occ_pos, label_pos)
-    _, pred_pos = torch.max(score_pos, dim=1)
+    valor_maximo, pred_pos = torch.max(score_pos, dim=1)
     score_softmax = softmax(fc_occ_pos)
     _, pred_pos_softmax = torch.max(score_softmax, dim=1)
     print("Clase positivo: {}, Prediccion: {}, Prediccion Softmax: {}".format(label_pos,pred_pos,pred_pos_softmax))
-        
+    print("Valor maximo: ",valor_maximo)    
         
 
     row_neg = df.iloc[368582]
