@@ -184,21 +184,24 @@ class BioPDSN(pl.LightningModule):
         #loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
         loss = loss_occ + lamb * sia_loss 
         
-        _, pred_clean = torch.max(score_clean, dim=1)
-        acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
-        acc_clean = torch.tensor(acc_clean)
+        #_, pred_clean = torch.max(score_clean, dim=1)
+        #acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
+        #acc_clean = torch.tensor(acc_clean)
         
         _, pred_occ = torch.max(score_occ, dim=1)
         acc_occ = accuracy_score(pred_occ.cpu(), labels.cpu())
         acc_occ = torch.tensor(acc_occ)
         
-        return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
+        #return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
+        return {'val_loss': loss, 'val_acc_occ':acc_occ}
 
     def validation_epoch_end(self, outputs):
         avgLoss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
+        #avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
         avgAcc_occ = torch.stack([x['val_acc_occ'] for x in outputs]).mean()
-        tensorboardLogs = {'val_loss': avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
+        #tensorboardLogs = {'val_loss': avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
+        tensorboardLogs = {'val_loss': avgLoss, 'val_acc_occ':avgAcc_occ}
         return {'val_loss': avgLoss, 'log': tensorboardLogs}
+
 
 
