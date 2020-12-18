@@ -7,6 +7,8 @@ import torch
 
 import sklearn.preprocessing
 
+import numpy as np
+
 if __name__ == '__main__':
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
