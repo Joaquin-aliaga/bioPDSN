@@ -29,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)
     parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
-    parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=True,type=bool)
+    parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=0,type=int)
     parser.add_argument("-model_weights","--model_weights",help="Path to model (trained) weights",default=None,type=str)
     
     args = parser.parse_args()
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
     biopdsn = BioPDSN(args)
-    if args.model_resume:
+    if (args.model_resume == 1):
         print("Loading model weights (trained)...")
         biopdsn.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
         print("Model weights loaded!")
