@@ -50,7 +50,7 @@ if __name__ == '__main__':
             sources, targets, labels = batch['source'], batch['target'],batch['class']
             labels = labels.flatten()
             f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, masks = biopdsn(sources,targets)
-            print("Mask shape: ",mask.shape)
+            print("Mask shape: ",masks.shape)
 
             masks_cpu = masks.to('cpu')
             masks_cpu = masks_cpu.view(-1,1)
