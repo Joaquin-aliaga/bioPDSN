@@ -13,6 +13,29 @@ gdd.download_file_from_google_drive(file_id='1UlOk6EtiaXTHylRUx2mySgvJX9ycoeBp',
 datasetPath.unlink()
 '''
 
+def create_negatives_column(df):
+    negatives = pd.DataFrame()
+    class_list = df.id_class.unique().tolist()
+    for i in tqdm(range(df.shape[0]),desc="Creating negatives column"):
+        row = df.iloc[i]
+        while True:
+        #select a random class from class_list
+        negative_class = np.random.choice(class_list)
+        
+        #check the random class is different from real class
+        if (negative_class != row.id_class):
+            neg_df = df[df.id_class == negative_class]
+            #select a random row
+            row_neg = neg_df.sample().iloc[0]
+            negatives = negatives.append({
+                'id_negative_class' : row.id_class,
+                'id_real_class' : row_neg.id_class,
+                'negative' : row_neg.target
+            },ignore_index=True)
+            break
+    return negatives
+
+
 if __name__ == '__main__':
     datasetPath = Path('./self-built-masked-face-recognition-dataset')
     maskPath = datasetPath/'AFDB_masked_face_dataset'
@@ -45,5 +68,19 @@ if __name__ == '__main__':
     dfName = './dataframe.pickle'
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
+
+    negatives = create_negatives_column(merge)
+
+    dfName = './negatives.pickle'
+    print(f'saving Dataframe to: {dfName}')
+    negatives.to_pickle(dfName)
+
+    merge['negative'] = negatives.negative
+
+    dfName = './dataframe_negatives.pickle'
+    print(f'saving Dataframe to: {dfName}')
+    merge.to_pickle(dfName)
+
+
 
     
