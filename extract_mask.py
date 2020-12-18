@@ -13,10 +13,10 @@ if __name__ == '__main__':
     parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
 
     #train args
+    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
-    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
     #model args
@@ -44,20 +44,22 @@ if __name__ == '__main__':
 
     train_dataloader = biopdsn.train_dataloader()
 
-    for batch_idx,batch in enumerate(train_dataloader):
-        sources, targets, labels = batch['source'], batch['target'],batch['class']
-        labels = labels.flatten()
-        f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
-        print("Mask shape: ",mask.shape)
+    with torch.no_grad():
 
-        mask_cpu = mask.to('cpu')
-        mask_cpu = mask_cpu.view(-1,1)
-        min_max_scaler = sklearn.preprocessing.MinMaxScaler()
-        mask_cpu = min_max_scaler.fit_transform(mask_cpu)
-        print("Mask shape after MinMax: ",mask_cpu.shape)
-        #OUT_SUM = OUT_SUM + mask_cpu.flatten()
-        #count_p = count_p + 1
-        break
+        for batch_idx,batch in enumerate(train_dataloader):
+            sources, targets, labels = batch['source'], batch['target'],batch['class']
+            labels = labels.flatten()
+            f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, masks = self(sources,targets)
+            print("Mask shape: ",mask.shape)
+
+            masks_cpu = masks.to('cpu')
+            masks_cpu = masks_cpu.view(-1,1)
+            min_max_scaler = sklearn.preprocessing.MinMaxScaler()
+            masks_cpu = min_max_scaler.fit_transform(masks_cpu)
+            print("Mask shape after MinMax: ",masks_cpu.shape)
+            #OUT_SUM = OUT_SUM + mask_cpu.flatten()
+            #count_p = count_p + 1
+            break
         
         
         
