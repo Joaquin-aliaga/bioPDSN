@@ -27,9 +27,11 @@ class MaskDataset(Dataset):
         row = self.dataFrame.iloc[key]
         source = cv2.imdecode(np.fromfile(row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         target = cv2.imdecode(np.fromfile(row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        negative = cv2.imdecode(np.fromfile(row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         return {
             'source': self.transformations(source),
             'target': self.transformations(target),
+            'negative': self.transformations(negative),
             'class': tensor([row['id_class']], dtype=long), # pylint: disable=not-callable
         }
     
