@@ -53,7 +53,7 @@ if __name__ == '__main__':
             print("Mask shape: ",masks.shape)
 
             masks_cpu = masks.to('cpu')
-            masks_cpu = masks_cpu.view(-1,1)
+            #masks_cpu = masks_cpu.view(-1,1)
             min_max_scaler = sklearn.preprocessing.MinMaxScaler()
             masks_cpu = min_max_scaler.fit_transform(masks_cpu)
             print("Mask shape after MinMax: ",masks_cpu.shape)
