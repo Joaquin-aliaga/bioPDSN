@@ -29,7 +29,9 @@ if __name__ == '__main__':
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)
     parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
-
+    parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=True,type=bool)
+    parser.add_argument("-model_weights","--model_weights",help="Path to model (trained) weights",default=None,type=str)
+    
     args = parser.parse_args()
     '''
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
@@ -39,8 +41,13 @@ if __name__ == '__main__':
     
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
-    biopdsn = BioPDSN(args).to(device)
-    biopdsn.eval()
+    biopdsn = BioPDSN(args)
+    if args.model_resume:
+        print("Loading model weights (trained)...")
+        model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
+        print("Model weights loaded!")
+    
+    biopdsn.to(device).eval()
 
     biopdsn.prepare_data()
 
@@ -59,7 +66,7 @@ if __name__ == '__main__':
             min_max_scaler = sklearn.preprocessing.MinMaxScaler()
             masks_cpu = min_max_scaler.fit_transform(masks_cpu)
             print("Mask shape after MinMax: ",masks_cpu.shape)
-            print("First 7 elements: ",masks_cpu[0:8])
+            print("First 7 elements: ",masks_cpu[0:7])
             mask_reshape = np.reshape(masks_cpu,masks.shape)
             print("Mask shape after reshape: ",mask_reshape.shape)
             print("First row elements of mask_reshape: ",mask_reshape[0,0,0,:])
