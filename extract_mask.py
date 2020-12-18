@@ -49,7 +49,7 @@ if __name__ == '__main__':
         for batch_idx,batch in enumerate(train_dataloader):
             sources, targets, labels = batch['source'], batch['target'],batch['class']
             labels = labels.flatten()
-            f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, masks = self(sources,targets)
+            f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, masks = biopdsn(sources,targets)
             print("Mask shape: ",mask.shape)
 
             masks_cpu = masks.to('cpu')
