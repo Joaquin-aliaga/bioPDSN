@@ -60,7 +60,7 @@ if __name__ == '__main__':
             print("First 7 elements: ",masks_cpu[0:8])
             mask_reshape = np.reshape(masks_cpu,masks.shape)
             print("Mask shape after reshape: ",mask_reshape.shape)
-            print("First 7 elements of mask_reshape: ",mask_reshape[0,0,[0:8],0])
+            print("First row elements of mask_reshape: ",mask_reshape[0,0,:,0])
 
             #OUT_SUM = OUT_SUM + mask_cpu.flatten()
             #count_p = count_p + 1
