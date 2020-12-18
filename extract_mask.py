@@ -44,7 +44,7 @@ if __name__ == '__main__':
     biopdsn = BioPDSN(args)
     if args.model_resume:
         print("Loading model weights (trained)...")
-        model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
+        biopdsn.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
         print("Model weights loaded!")
     
     biopdsn.to(device).eval()
@@ -70,6 +70,10 @@ if __name__ == '__main__':
             mask_reshape = np.reshape(masks_cpu,masks.shape)
             print("Mask shape after reshape: ",mask_reshape.shape)
             print("First row elements of mask_reshape: ",mask_reshape[0,0,0,:])
+
+            mean_mask = np.mean(mask_reshape,axis=3)
+            print("Mean mask shape: ",mean_mask.shape)
+            print("Mean mask: ",mean_mask)
 
             #OUT_SUM = OUT_SUM + mask_cpu.flatten()
             #count_p = count_p + 1
