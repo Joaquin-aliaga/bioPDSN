@@ -52,7 +52,7 @@ if __name__ == '__main__':
     biopdsn.prepare_data()
 
     train_dataloader = biopdsn.train_dataloader()
-
+    print("len dataloader: ",len(train_dataloader))
     with torch.no_grad():
 
         for batch_idx,batch in enumerate(train_dataloader):
@@ -71,7 +71,7 @@ if __name__ == '__main__':
             print("Mask shape after reshape: ",mask_reshape.shape)
             print("First row elements of mask_reshape: ",mask_reshape[0,0,0,:])
 
-            mean_mask = np.mean(mask_reshape,axis=3)
+            mean_mask = np.mean(mask_reshape,axis=0)
             print("Mean mask shape: ",mean_mask.shape)
             print("Mean mask: ",mean_mask)
 
