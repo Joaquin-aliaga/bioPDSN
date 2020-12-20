@@ -166,7 +166,7 @@ class BioPDSN(pl.LightningModule):
         loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
         
         #tensorboardLogs = {'train_loss': loss}
-        self.logger.experiment.add_scalar('Loss/Train', loss, self.current_epoch)
+        self.logger.experiment.add_scalar('train_loss', loss, self.current_epoch)
         
         #return {'loss': loss, 'log': tensorboardLogs}
         return loss
@@ -183,8 +183,7 @@ class BioPDSN(pl.LightningModule):
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         lamb = 10
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
-        #loss = loss_occ + lamb * sia_loss 
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
         
         _, pred_clean = torch.max(score_clean, dim=1)
         acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
@@ -202,12 +201,14 @@ class BioPDSN(pl.LightningModule):
         avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
         avgAcc_occ = torch.stack([x['val_acc_occ'] for x in outputs]).mean()
         
-        self.logger.experiment.add_scalar('Loss/Val', avgLoss, self.current_epoch)
-        self.logger.experiment.add_scalar('Accuracy_occ/Val', avgAcc_occ, self.current_epoch)
-        self.logger.experiment.add_scalar('Accuracy_clean/Val', avgAcc_clean, self.current_epoch)
+        self.logger.experiment.add_scalar('val_loss', avgLoss, self.current_epoch)
+        self.logger.experiment.add_scalar('val_acc_occ', avgAcc_occ, self.current_epoch)
+        self.logger.experiment.add_scalar('val_acc_clean', avgAcc_clean, self.current_epoch)
         
+        #tensorboardLogs = {}
+
         #return {'val_loss': avgLoss, 'log': tensorboardLogs}
-        #return avgLoss
+        return avgLoss
 
 
 
