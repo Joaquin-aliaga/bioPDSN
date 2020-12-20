@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
-        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        #self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         #data args
         self.args = args
         self.dfPath = args.dfPath
@@ -111,11 +111,12 @@ class BioPDSN(pl.LightningModule):
         return features
 
     def forward(self,source,target):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
 
-        f_clean = torch.from_numpy(f_clean).to(self.device)
-        f_occ = torch.from_numpy(f_occ).to(self.device)
+        f_clean = torch.from_numpy(f_clean).to(device)
+        f_occ = torch.from_numpy(f_occ).to(device)
 
         # Begin Siamese branch
         f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
