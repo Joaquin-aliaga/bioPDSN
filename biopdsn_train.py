@@ -48,12 +48,12 @@ if __name__ == '__main__':
     
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints_contrastive_rmfd/',
-        filename='{epoch}-{val_loss:.2f}',
+        filename='{epoch}-{val_acc_occ:.2f}',
         save_weights_only=True,
         save_top_k=1,
         verbose=True,
-        monitor='val_loss',
-        mode='min'
+        monitor='val_acc_occ',
+        mode='max'
     )
     trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0,
                       max_epochs=args.max_epochs,
