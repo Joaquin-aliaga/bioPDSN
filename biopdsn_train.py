@@ -48,7 +48,7 @@ if __name__ == '__main__':
     
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints_contrastive_rmfd/',
-        filename='{epoch}-{val_loss:.2f}'
+        filename='{epoch}-{val_loss:.2f}',
         save_weights_only=True,
         save_top_k=1,
         verbose=True,
