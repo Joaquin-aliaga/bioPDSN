@@ -11,6 +11,8 @@ import torch
 
 
 if __name__ == '__main__':
+    wd = os.getcwd()
+    print("Wd: ",wd)
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
     parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
