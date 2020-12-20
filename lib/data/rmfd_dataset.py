@@ -8,7 +8,7 @@ import numpy as np
 from torch import long, tensor
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
-
+import os
 
 class MaskDataset(Dataset):
     def __init__(self, dataFrame,input_size=[112,112]):
@@ -19,14 +19,16 @@ class MaskDataset(Dataset):
             Resize((input_size[0], input_size[1])),
             ToTensor(), # [0, 1]
         ])
+        self.wd = os.getcwd()
+    
     
     def __getitem__(self, key):
         if isinstance(key, slice):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        source = cv2.imdecode(np.fromfile('/'+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        target = cv2.imdecode(np.fromfile('/'+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        source = cv2.imdecode(np.fromfile(self.wd+'/'+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        target = cv2.imdecode(np.fromfile(self.wd+'/'+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         #negative = cv2.imdecode(np.fromfile(row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         return {
             'source': self.transformations(source),
@@ -36,4 +38,4 @@ class MaskDataset(Dataset):
         }
     
     def __len__(self):
-        return len(self.dataFrame.index)
+        return len(self.dataFrame.index)    
