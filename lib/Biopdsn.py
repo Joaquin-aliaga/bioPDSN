@@ -165,11 +165,11 @@ class BioPDSN(pl.LightningModule):
         
         loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
         
-        #tensorboardLogs = {'train_loss': loss}
-        self.logger.experiment.add_scalar('train_loss', loss, self.current_epoch)
+        tensorboardLogs = {'train_loss': loss}
+        #self.logger.experiment.add_scalar('train_loss', loss, self.current_epoch)
         
-        #return {'loss': loss, 'log': tensorboardLogs}
-        return loss
+        return {'loss': loss, 'log': tensorboardLogs}
+        #return loss
 
     def validation_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
@@ -205,10 +205,10 @@ class BioPDSN(pl.LightningModule):
         self.logger.experiment.add_scalar('val_acc_occ', avgAcc_occ, self.current_epoch)
         self.logger.experiment.add_scalar('val_acc_clean', avgAcc_clean, self.current_epoch)
         
-        #tensorboardLogs = {}
+        tensorboardLogs = {'val_loss':avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
 
-        #return {'val_loss': avgLoss, 'log': tensorboardLogs}
-        return avgLoss
+        return {'val_loss': avgLoss, 'log': tensorboardLogs}
+        #return avgLoss
 
 
 

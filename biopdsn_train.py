@@ -44,13 +44,13 @@ if __name__ == '__main__':
     args.device = device
     biopdsn = BioPDSN(args).to(device)
 
-    logger = TensorBoardLogger('tb_logs',name="pdsn_contrastive_rmfd")
+    #logger = TensorBoardLogger('tb_logs',name="pdsn_contrastive_rmfd")
     
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints_contrastive_rmfd/',
         filename='{epoch}-{val_acc_occ:.2f}',
         save_weights_only=True,
-        save_top_k=1,
+        #save_top_k=1,
         verbose=True,
         monitor='val_acc_occ',
         mode='max'
@@ -58,6 +58,6 @@ if __name__ == '__main__':
     trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0,
                       max_epochs=args.max_epochs,
                       checkpoint_callback=checkpoint_callback,
-                      profiler=True,
-                      logger=logger)
+                      profiler=True
+                      )
     trainer.fit(biopdsn)
