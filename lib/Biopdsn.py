@@ -138,10 +138,10 @@ class BioPDSN(pl.LightningModule):
         return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
 
     def train_dataloader(self):
-        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers,drop_last=True)
     
     def val_dataloader(self):
-        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers)
+        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
