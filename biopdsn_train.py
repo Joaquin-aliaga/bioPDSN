@@ -47,8 +47,10 @@ if __name__ == '__main__':
     logger = TensorBoardLogger('tb_logs',name="pdsn_contrastive_rmfd")
     
     checkpoint_callback = ModelCheckpoint(
-        filepath='./checkpoints/weights.ckpt',
+        dirpath='checkpoints_contrastive_rmfd/',
+        filename='{epoch}-{val_loss:.2f}'
         save_weights_only=True,
+        save_top_k=1,
         verbose=True,
         monitor='val_loss',
         mode='min'
