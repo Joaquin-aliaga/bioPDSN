@@ -53,6 +53,8 @@ if __name__ == '__main__':
 
     train_dataloader = biopdsn.train_dataloader()
     print("len dataloader: ",len(train_dataloader))
+    OUT_SUM = np.zeros([512*7*7])
+    count_p = 0
     with torch.no_grad():
 
         for batch_idx,batch in enumerate(train_dataloader):
@@ -66,6 +68,7 @@ if __name__ == '__main__':
             min_max_scaler = sklearn.preprocessing.MinMaxScaler()
             masks_cpu = min_max_scaler.fit_transform(masks_cpu)
             print("Mask shape after MinMax: ",masks_cpu.shape)
+            '''
             print("First 7 elements: ",masks_cpu[0:7])
             mask_reshape = np.reshape(masks_cpu,masks.shape)
             print("Mask shape after reshape: ",mask_reshape.shape)
@@ -74,8 +77,9 @@ if __name__ == '__main__':
             mean_mask = np.mean(mask_reshape,axis=0)
             print("Mean mask shape: ",mean_mask.shape)
             print("Mean mask: ",mean_mask)
-
-            #OUT_SUM = OUT_SUM + mask_cpu.flatten()
+            '''
+            OUT_SUM = OUT_SUM + mask_cpu.flatten()
+            print("Out sum shape: ",OUT_SUM.shape)
             #count_p = count_p + 1
             break
         
