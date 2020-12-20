@@ -8,9 +8,8 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 
 
 ## Install dependencies
-(not recommended, you may have memory issues depending on your system)
-`pip install -r requirements.txt`
-A better way is to install libraries one-by-one following requirements.txt
+* `pip install -r requirements.txt` (not recommended, you may have memory issues depending on your system)
+* A better way is to install libraries one-by-one following requirements.txt
 
 
 ## Train
