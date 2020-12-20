@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
+import numpy as np
 '''
 from google_drive_downloader import GoogleDriveDownloader as gdd
 # download dataset from link provided by
@@ -19,20 +20,20 @@ def create_negatives_column(df):
     for i in tqdm(range(df.shape[0]),desc="Creating negatives column"):
         row = df.iloc[i]
         while True:
-        #select a random class from class_list
-        negative_class = np.random.choice(class_list)
-        
-        #check the random class is different from real class
-        if (negative_class != row.id_class):
-            neg_df = df[df.id_class == negative_class]
-            #select a random row
-            row_neg = neg_df.sample().iloc[0]
-            negatives = negatives.append({
-                'id_negative_class' : row.id_class,
-                'id_real_class' : row_neg.id_class,
-                'negative' : row_neg.target
-            },ignore_index=True)
-            break
+            #select a random class from class_list
+            negative_class = np.random.choice(class_list)
+
+            #check the random class is different from real class
+            if (negative_class != row.id_class):
+                neg_df = df[df.id_class == negative_class]
+                #select a random row
+                row_neg = neg_df.sample().iloc[0]
+                negatives = negatives.append({
+                    'id_negative_class' : row.id_class,
+                    'id_real_class' : row_neg.id_class,
+                    'negative' : row_neg.target
+                },ignore_index=True)
+                break
     return negatives
 
 
