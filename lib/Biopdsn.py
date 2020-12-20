@@ -150,10 +150,6 @@ class BioPDSN(pl.LightningModule):
         return optimizer
     
     def training_step(self, batch, batch_idx):
-        if(self.current_epoch==1):
-            sampleImg=torch.rand((1,3,112,112))
-            self.logger.experiment.add_graph(BioPDSN(self.args),sampleImg)
-
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
