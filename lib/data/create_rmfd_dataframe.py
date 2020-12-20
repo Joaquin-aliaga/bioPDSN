@@ -52,7 +52,7 @@ if __name__ == '__main__':
                 'id_name': str(id)
             }, ignore_index=True)
 
-    for subject in tqdm(list(nonMaskPath.iterdir()), desc='no masked photos'):
+    for subject in tqdm(list(nonMaskPath.iterdir()), desc='non masked photos'):
         id = subject.stem
         for imgPath in subject.iterdir():
             nonMaskDF = nonMaskDF.append({

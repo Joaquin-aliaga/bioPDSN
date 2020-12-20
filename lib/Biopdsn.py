@@ -19,8 +19,9 @@ from torch.utils.data import DataLoader
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
-        #self.device = args.device
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         #data args
+        self.args = args
         self.dfPath = args.dfPath
         self.df = None
         self.trainDF = None
@@ -112,14 +113,11 @@ class BioPDSN(pl.LightningModule):
     def forward(self,source,target):
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
-        #torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        f_clean = torch.from_numpy(f_clean).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
-        f_occ = torch.from_numpy(f_occ).to(torch.device("cuda:0" if torch.cuda.is_available() else "cpu"))
+
+        f_clean = torch.from_numpy(f_clean).to(self.device)
+        f_occ = torch.from_numpy(f_occ).to(self.device)
 
         # Begin Siamese branch
-        # actual: add(Tensor input, Number alpha, Tensor other, *, Tensor out)
-        # cambio: add(Tensor input, Tensor other, *, Number alpha, Tensor out)
-        #f_diff = torch.add(f_clean, -1.0, f_occ)
         f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
         f_diff = torch.abs(f_diff)
         mask = self.sia(f_diff)
@@ -136,10 +134,10 @@ class BioPDSN(pl.LightningModule):
         return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
 
     def train_dataloader(self):
-        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers,drop_last=True)
+        return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
     
     def val_dataloader(self):
-        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
+        return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers)
     
     def configure_optimizers(self):
         optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
@@ -148,26 +146,30 @@ class BioPDSN(pl.LightningModule):
         return optimizer
     
     def training_step(self, batch, batch_idx):
+        if(self.current_epoch==1):
+            sampleImg=torch.rand((1,3,112,112))
+            self.logger.experiment.add_graph(BioPDSN(self.args),sampleImg)
+
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
-        #score_clean = self.classifier(fc, labels)
-        #loss_clean = self.loss_cls(score_clean, labels)
+        score_clean = self.classifier(fc, labels)
+        loss_clean = self.loss_cls(score_clean, labels)
         
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         
         lamb = 10
         
-        #loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
-        loss = loss_occ + lamb * sia_loss
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * sia_loss
         
-        tensorboardLogs = {'train_loss': loss}
-        # new version of log (may use this)
-        #self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
-        return {'loss': loss, 'log': tensorboardLogs}
+        #tensorboardLogs = {'train_loss': loss}
+        self.logger.experiment.add_scalar('Loss/Train', loss, self.current_epoch)
+        
+        #return {'loss': loss, 'log': tensorboardLogs}
+        return loss
 
     def validation_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
@@ -175,33 +177,37 @@ class BioPDSN(pl.LightningModule):
         f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
-        #score_clean = self.classifier(fc, labels)
-        #loss_clean = self.loss_cls(score_clean, labels)
+        score_clean = self.classifier(fc, labels)
+        loss_clean = self.loss_cls(score_clean, labels)
         
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         lamb = 10
-        #loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
-        loss = loss_occ + lamb * sia_loss 
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * sia_loss
+        #loss = loss_occ + lamb * sia_loss 
         
-        #_, pred_clean = torch.max(score_clean, dim=1)
-        #acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
-        #acc_clean = torch.tensor(acc_clean)
+        _, pred_clean = torch.max(score_clean, dim=1)
+        acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())
+        acc_clean = torch.tensor(acc_clean)
         
         _, pred_occ = torch.max(score_occ, dim=1)
         acc_occ = accuracy_score(pred_occ.cpu(), labels.cpu())
         acc_occ = torch.tensor(acc_occ)
         
-        #return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
-        return {'val_loss': loss, 'val_acc_occ':acc_occ}
+        return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
+        #return {'val_loss': loss, 'val_acc_occ':acc_occ}
 
     def validation_epoch_end(self, outputs):
         avgLoss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        #avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
+        avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
         avgAcc_occ = torch.stack([x['val_acc_occ'] for x in outputs]).mean()
-        #tensorboardLogs = {'val_loss': avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
-        tensorboardLogs = {'val_loss': avgLoss, 'val_acc_occ':avgAcc_occ}
-        return {'val_loss': avgLoss, 'log': tensorboardLogs}
+        
+        self.logger.experiment.add_scalar('Loss/Val', avgLoss, self.current_epoch)
+        self.logger.experiment.add_scalar('Accuracy_occ/Val', avgAcc_occ, self.current_epoch)
+        self.logger.experiment.add_scalar('Accuracy_clean/Val', avgAcc_clean, self.current_epoch)
+        
+        #return {'val_loss': avgLoss, 'log': tensorboardLogs}
+        return avgLoss
 
 
 

@@ -5,6 +5,7 @@ import argparse
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import TensorBoardLogger
 
 import torch
 
@@ -40,16 +41,19 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
     biopdsn = BioPDSN(args).to(device)
+
+    logger = TensorBoardLogger('tb_logs',name="psdn_contrastive_rmfd")
     
     checkpoint_callback = ModelCheckpoint(
-        filepath='./checkpoints_no_clean_loss/weights.ckpt',
+        filepath='./checkpoints/weights.ckpt',
         save_weights_only=True,
         verbose=True,
-        monitor='val_acc_occ',
-        mode='max'
+        monitor='val_loss',
+        mode='min'
     )
     trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0,
                       max_epochs=args.max_epochs,
                       checkpoint_callback=checkpoint_callback,
-                      profiler=True)
+                      profiler=True,
+                      logger=logger)
     trainer.fit(biopdsn)
