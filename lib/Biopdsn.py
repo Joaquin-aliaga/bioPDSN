@@ -211,7 +211,7 @@ class BioPDSN(pl.LightningModule):
         self.logger.experiment.add_scalar('Accuracy_clean/Val', avgAcc_clean, self.current_epoch)
         
         #return {'val_loss': avgLoss, 'log': tensorboardLogs}
-        return avgLoss
+        #return avgLoss
 
 
 
