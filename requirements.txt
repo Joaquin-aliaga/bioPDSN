@@ -1,0 +1,12 @@
+mxnet==1.7.0.post1
+torchvision==0.8.1
+easydict==1.9
+torch==1.7.0
+opencv_python==4.4.0.46
+tqdm==4.53.0
+numpy==1.19.4
+facenet_pytorch==2.5.1
+pandas==1.1.5
+Pillow==8.0.1
+pytorch_lightning==1.1.1
+scikit_learn==0.23.2

@@ -69,7 +69,7 @@ if __name__ == '__main__':
     dfName = './dataframe.pickle'
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
-
+    
     negatives = create_negatives_column(merge)
 
     dfName = './negatives.pickle'

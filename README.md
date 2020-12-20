@@ -8,7 +8,10 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 
 
 ## Install dependencies
+(not recommended, you may have memory issues depending on your system)
 `pip install -r requirements.txt`
+A better way is to install libraries one-by-one following requirements.txt
+
 
 ## Train
 0. `git clone https://github.com/Joaquin-aliaga/bioPDSN.git`
