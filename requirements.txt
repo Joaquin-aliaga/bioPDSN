@@ -1,4 +1,4 @@
-mxnet==1.7.0.post1
+mxnet-cu101
 torchvision==0.8.1
 easydict==1.9
 torch==1.7.0
