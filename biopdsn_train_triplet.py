@@ -1,6 +1,6 @@
 import os
 
-from lib.Biopdsn import BioPDSN
+from lib.Biopdsn_triplet import BioPDSN
 import argparse
 
 from pytorch_lightning import Trainer
