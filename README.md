@@ -37,3 +37,4 @@ Face verification system for people wearing masks, based on Pairwise Differentia
 
 ### Acknowledgments
 * The Real Masked Face Dataset (RMFD) is owned by [https://github.com/X-zhangyang/Real-World-Masked-Face-Dataset](https://github.com/X-zhangyang/Real-World-Masked-Face-Dataset)
+* The Casia-webface-masked database was created using a modified version of [https://github.com/Amoswish/wear_mask_to_face](https://github.com/Amoswish/wear_mask_to_face) 
