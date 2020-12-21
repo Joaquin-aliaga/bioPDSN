@@ -1,7 +1,7 @@
 from lib.models.resnet import Resnet
 from lib.models.layer import MarginCosineProduct
 from facenet_pytorch import MTCNN
-from lib.data.rmfd_dataset import MaskDataset
+from lib.data.dataset import MaskDataset
 
 import pytorch_lightning as pl
 

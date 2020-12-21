@@ -2,6 +2,8 @@ from pathlib import Path
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
+import argparse
+
 '''
 from google_drive_downloader import GoogleDriveDownloader as gdd
 # download dataset from link provided by
@@ -38,9 +40,21 @@ def create_negatives_column(df):
 
 
 if __name__ == '__main__':
-    datasetPath = Path('./self-built-masked-face-recognition-dataset')
-    maskPath = datasetPath/'AFDB_masked_face_dataset'
-    nonMaskPath = datasetPath/'AFDB_face_dataset'
+    parser = argparse.ArgumentParser(description='Params for bioPDSN train')
+    parser.add_argument("-use_database","--use_database",choices=['RMFD','CASIA'],default='RMFD',help="Which database to use, RMFD or CASIA-webface",type=str)
+    args = parser.parse_args()
+    
+    if args.use_database == 'RMFD':
+        datasetPath = Path('./self-built-masked-face-recognition-dataset')
+        maskPath = datasetPath/'AFDB_masked_face_dataset'
+        nonMaskPath = datasetPath/'AFDB_face_dataset'
+    elif args.use_database == 'CASIA':
+        datasetPath = Path('./CASIA-WebFace')
+        maskPath = datasetPath/'webface_masked'
+        nonMaskPath = datasetPath/'casia_webface_112x112'
+    else:
+        print("Invalid database")
+        exit(1)        
     maskDF = pd.DataFrame()
     nonMaskDF = pd.DataFrame()
 
@@ -66,19 +80,19 @@ if __name__ == '__main__':
     merge['id_name'] = merge['id_name'].astype('category')
     merge['id_class'] = merge['id_name'].cat.codes
 
-    dfName = './dataframe.pickle'
+    dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
     
     negatives = create_negatives_column(merge)
 
-    dfName = './negatives.pickle'
+    dfName = './{}_negatives.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
     negatives.to_pickle(dfName)
 
     merge['negative'] = negatives.negative
 
-    dfName = './dataframe_negatives.pickle'
+    dfName = './{}_dataframe_negatives.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
     merge.to_pickle(dfName)
 
