@@ -14,14 +14,17 @@ Face verification system using Pairwise Differential Siamese Network [paper](htt
 
 ## Train
 0. `git clone https://github.com/Joaquin-aliaga/bioPDSN.git`
-1.
-1.1. Download RMFD dataset from [here](https://drive.google.com/file/d/1UlOk6EtiaXTHylRUx2mySgvJX9ycoeBp/view?usp=sharing) and put it in lib/data
-1.2. Download CASIA-webface-112x112 from 
-2. `cd lib/data && unzip RMFD.zip`
-3. (inside lib/data) `python create_dataframe.py --use_database RMFD` (or CASIA)
-4. `cd ../..`
-5. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
-6. run `python biopdsn_train.py -num_class 403 -dfPath "./lib/data/dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64`
+1. Download and unzip databases
+    * Download RMFD dataset from [here](https://drive.google.com/file/d/1UlOk6EtiaXTHylRUx2mySgvJX9ycoeBp/view?usp=sharing) and put it in lib/data
+    * Download CASIA-webface-112x112 from
+    * `cd lib/data && unzip RMFD.zip`
+    * `unzip CASIA-webface.zip`
+2. Create dataframes (inside lib/data)
+    *  `python create_dataframe.py --use_database "RMFD"`
+    * `python create_dataframe.py --use_database "CASIA"`
+3. `cd ../..`
+4. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
+5. run `python biopdsn_train.py -num_class 403 -dfPath "./lib/data/{RMFD or CASIA}_dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64`
 
 ### Usefull guides
 * [Create VM instance Google Cloud Platform](https://cloud.google.com/ai-platform/deep-learning-vm/docs/pytorch_start_instance)
