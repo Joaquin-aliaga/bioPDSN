@@ -163,7 +163,9 @@ class BioPDSN(pl.LightningModule):
         labels = labels.flatten()
         f_clean_masked, f_occ_masked, f_neg_masked,fc, fc_occ = self(sources,targets,negatives)
         
-        triplet_loss = torch.max([self.L2loss(f_clean_masked,f_occ_masked) - self.L2loss(f_clean_masked,f_neg_masked) + self.margin,0])
+        triplet_loss = torch.Tensor(
+            [self.L2loss(f_clean_masked,f_occ_masked) - self.L2loss(f_clean_masked,f_neg_masked) + self.margin,
+            0]).max()
                 
         score_clean = self.classifier(fc, labels)
         loss_clean = self.loss_cls(score_clean, labels)
