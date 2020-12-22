@@ -94,9 +94,10 @@ class BioPDSN(pl.LightningModule):
     
     def prepare_data(self):
         self.df = pd.read_pickle(self.dfPath)
+        root = os.getcwd()+'/lib/data/'
         train, validate = train_test_split(self.df, test_size=0.2, random_state=42,stratify=self.df.id_class)
-        self.trainDF = MaskDataset(train,self.imageShape[-2:])
-        self.validateDF = MaskDataset(validate,self.imageShape[-2:])
+        self.trainDF = MaskDataset(train,root,self.imageShape[-2:])
+        self.validateDF = MaskDataset(validate,root,self.imageShape[-2:])
         
     def get_faces(self,batch):
         if (type(batch) == list):
