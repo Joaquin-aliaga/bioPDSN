@@ -27,7 +27,7 @@ class MaskDataset(Dataset):
         row = self.dataFrame.iloc[key]
         source = cv2.imdecode(np.fromfile(self.root+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         target = cv2.imdecode(np.fromfile(self.root+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        negative = cv2.imdecode(np.fromfile(row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        negative = cv2.imdecode(np.fromfile(self.root+row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         return {
             'source': self.transformations(source),
             'target': self.transformations(target),
