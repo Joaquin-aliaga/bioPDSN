@@ -65,4 +65,4 @@ if __name__ == '__main__':
     trainer.tune(biopdsn)
 
     #train
-    #trainer.fit(biopdsn)
+    trainer.fit(biopdsn)
