@@ -131,7 +131,7 @@ class BioPDSN(pl.LightningModule):
 
         f_diff_neg = torch.add(f_clean,f_neg,alpha=-1.0)
         f_diff_neg = torch.abs(f_diff_neg)
-        mask_neg = self.sia(f_diff)
+        mask_neg = self.sia(f_diff_neg)
 
         # End Siamese branch
 
@@ -153,7 +153,7 @@ class BioPDSN(pl.LightningModule):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.parameters()),
                                 lr=self.lr)
     
         return optimizer
