@@ -144,7 +144,7 @@ class BioPDSN(pl.LightningModule):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.parameters()),
+        optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.parameters()),
                                 lr=self.lr)
     
         return optimizer

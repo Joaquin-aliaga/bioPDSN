@@ -20,7 +20,7 @@ if __name__ == '__main__':
     #train args
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
-    parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
+    parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-3,type=float)
     parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
@@ -56,8 +56,13 @@ if __name__ == '__main__':
         mode='max'
     )
     trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0,
-                      max_epochs=args.max_epochs,
-                      checkpoint_callback=checkpoint_callback,
-                      profiler=True
-                      )
+                    auto_lr_find=True,
+                    max_epochs=args.max_epochs,
+                    checkpoint_callback=checkpoint_callback,
+                    profiler=True
+                    )
+    #find best starting lr
+    trainer.tune(biopdsn)
+
+    #train
     trainer.fit(biopdsn)
