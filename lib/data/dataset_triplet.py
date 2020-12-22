@@ -8,7 +8,6 @@ import numpy as np
 from torch import long, tensor
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
-import os
 
 class MaskDataset(Dataset):
     def __init__(self, dataFrame,root,input_size=[112,112]):
