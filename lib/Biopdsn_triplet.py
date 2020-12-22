@@ -30,6 +30,7 @@ class BioPDSN(pl.LightningModule):
         self.batch_size = args.batch_size
         self.num_workers = args.num_workers
         self.lr = args.lr
+        self.triplet_loss_weight = args.tweight
         #self.momentum = args.momentum
         #self.weight_decay = args.weight_decay
         self.num_class = args.num_class
@@ -173,8 +174,7 @@ class BioPDSN(pl.LightningModule):
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         
-        lamb = 10
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + lamb * triplet_loss
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + self.triplet_loss_weight * triplet_loss
         
         tensorboardLogs = {'train_loss': loss}
         return {'loss': loss, 'log': tensorboardLogs}
@@ -194,8 +194,7 @@ class BioPDSN(pl.LightningModule):
         score_occ = self.classifier(fc_occ, labels)
         loss_occ = self.loss_cls(score_occ, labels)
         
-        lamb = 10
-        loss = 0.5 * loss_clean + 0.5 * loss_occ + 10 * triplet_loss
+        loss = 0.5 * loss_clean + 0.5 * loss_occ + self.triplet_loss_weight * triplet_loss
         
         _, pred_clean = torch.max(score_clean, dim=1)
         acc_clean = accuracy_score(pred_clean.cpu(), labels.cpu())

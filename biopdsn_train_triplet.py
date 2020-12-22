@@ -22,6 +22,7 @@ if __name__ == '__main__':
     parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
     parser.add_argument("-margin","--margin",help="Margin to use in Triplet Loss",default=1.5,type=float)
+    parser.add_argument("-tweight","--tweight",help="Triplet Loss weight",default=2.0,type=float)
 
     #model args
     #parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
