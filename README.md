@@ -18,8 +18,8 @@ Face verification system for people wearing masks, based on Pairwise Differentia
     * Download RMFD dataset from [here](https://drive.google.com/file/d/1UlOk6EtiaXTHylRUx2mySgvJX9ycoeBp/view?usp=sharing) and put it in lib/data
     * `cd lib/data`
     * `unzip RMFD.zip`
-    * Download CASIA-webface-112x112 from
-    * run `create_casiawebface_112x112.py`
+    * Download CASIA-webface-112x112 from [here](https://drive.google.com/file/d/1Pfn90QHx51gNlK1a6zzXCmfmNOetlVYy/view?usp=sharing)
+    * `mkdir CASIA-webface && cd CASIA-webface`
     * `unzip CASIA-webface.zip`
 2. Create dataframes (inside lib/data)
     * `python create_dataframe.py --use_database "RMFD"`
