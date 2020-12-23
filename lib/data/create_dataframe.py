@@ -49,7 +49,7 @@ if __name__ == '__main__':
         maskPath = datasetPath/'AFDB_masked_face_dataset'
         nonMaskPath = datasetPath/'AFDB_face_dataset'
     elif args.use_database == 'CASIA':
-        datasetPath = Path('./CASIA-WebFace')
+        datasetPath = Path('./CASIA-webface')
         maskPath = datasetPath/'webface_masked'
         nonMaskPath = datasetPath/'casia_webface_112x112'
     else:
