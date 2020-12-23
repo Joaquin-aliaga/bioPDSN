@@ -21,7 +21,6 @@ import os
 class BioPDSN(pl.LightningModule):
     def __init__(self,args):
         super(BioPDSN,self).__init__()
-        #self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         #data args
         self.args = args
         self.dfPath = args.dfPath
@@ -32,9 +31,8 @@ class BioPDSN(pl.LightningModule):
         self.batch_size = args.batch_size
         self.num_workers = args.num_workers
         self.lr = args.lr
-        #self.momentum = args.momentum
-        #self.weight_decay = args.weight_decay
         self.num_class = args.num_class
+        
         #loss criterion
         self.loss_cls = nn.CrossEntropyLoss().to(self.device)
         self.loss_diff = nn.L1Loss(reduction='mean').to(self.device) 
@@ -45,18 +43,6 @@ class BioPDSN(pl.LightningModule):
         
         #nets
         self.classifier = MarginCosineProduct(self.features_shape, self.num_class)
-        '''
-        if(args.use_mtcnn == "False"):
-            self.use_mtcnn = False
-        else:
-            self.use_mtcnn = True
-        if(self.use_mtcnn):
-            self.mtcnn = MTCNN(image_size=self.imageShape[1], min_face_size=80, 
-                            device = self.device, post_process=args.mtcnn_norm,
-                            keep_all=args.keep_all)
-        else:
-            self.mtcnn = None
-        '''
         self.resnet = Resnet(args)
         
         # Mask Generator
@@ -82,8 +68,6 @@ class BioPDSN(pl.LightningModule):
             elif (isinstance(m, nn.BatchNorm2d) or isinstance(m, nn.BatchNorm1d)):
                 nn.init.constant_(m.weight,1)
                 nn.init.constant_(m.bias,0)
-        
-        #self.freeze_layers('mtcnn')
         
     def get_parameters(self,filter=None):
         for name,param in self.named_parameters():
@@ -114,12 +98,11 @@ class BioPDSN(pl.LightningModule):
         return features
 
     def forward(self,source,target):
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         f_clean = self.get_features(source.cpu())
         f_occ = self.get_features(target.cpu())
 
-        f_clean = torch.from_numpy(f_clean).to(device)
-        f_occ = torch.from_numpy(f_occ).to(device)
+        f_clean = torch.from_numpy(f_clean).to(self.device)
+        f_occ = torch.from_numpy(f_occ).to(self.device)
 
         # Begin Siamese branch
         f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
@@ -135,7 +118,7 @@ class BioPDSN(pl.LightningModule):
         fc = self.fc(fc)
         fc_occ = self.fc(fc_occ)
 
-        return f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask
+        return f_clean_masked, f_occ_masked, fc, fc_occ
 
     def train_dataloader(self):
         return DataLoader(self.trainDF, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers,drop_last=True)
@@ -152,7 +135,7 @@ class BioPDSN(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         labels = labels.flatten()
-        f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
+        f_clean_masked, f_occ_masked, fc, fc_occ = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
         score_clean = self.classifier(fc, labels)
@@ -174,7 +157,7 @@ class BioPDSN(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         labels = labels.flatten()
-        f_clean_masked, f_occ_masked, fc, fc_occ, f_diff, mask = self(sources,targets)
+        f_clean_masked, f_occ_masked, fc, fc_occ = self(sources,targets)
         sia_loss = self.loss_diff(f_occ_masked, f_clean_masked)
         
         score_clean = self.classifier(fc, labels)
@@ -194,8 +177,7 @@ class BioPDSN(pl.LightningModule):
         acc_occ = torch.tensor(acc_occ)
         
         return {'val_loss': loss, 'val_acc_clean':acc_clean, 'val_acc_occ':acc_occ}
-        #return {'val_loss': loss, 'val_acc_occ':acc_occ}
-
+        
     def validation_epoch_end(self, outputs):
         avgLoss = torch.stack([x['val_loss'] for x in outputs]).mean()
         avgAcc_clean = torch.stack([x['val_acc_clean'] for x in outputs]).mean()
@@ -208,7 +190,6 @@ class BioPDSN(pl.LightningModule):
         tensorboardLogs = {'val_loss':avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
 
         return {'val_loss': avgLoss, 'log': tensorboardLogs}
-        #return avgLoss
 
 
 

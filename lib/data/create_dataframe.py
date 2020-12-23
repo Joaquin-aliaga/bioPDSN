@@ -16,6 +16,8 @@ gdd.download_file_from_google_drive(file_id='1UlOk6EtiaXTHylRUx2mySgvJX9ycoeBp',
 datasetPath.unlink()
 '''
 
+CASIA_SAMPLE = 400000
+
 def create_negatives_column(df):
     negatives = pd.DataFrame()
     class_list = df.id_class.unique().tolist()
@@ -43,6 +45,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
     parser.add_argument("-use_database","--use_database",choices=['RMFD','CASIA'],default='RMFD',help="Which database to use, RMFD or CASIA-webface",type=str)
     args = parser.parse_args()
+
+    
     
     if args.use_database == 'RMFD':
         datasetPath = Path('./self-built-masked-face-recognition-dataset')
@@ -54,7 +58,7 @@ if __name__ == '__main__':
         nonMaskPath = datasetPath/'casia_webface_112x112'
     else:
         print("Invalid database")
-        exit(1)        
+        exit(1)
     maskDF = pd.DataFrame()
     nonMaskDF = pd.DataFrame()
 
@@ -79,6 +83,10 @@ if __name__ == '__main__':
     #adding class numbers to id_names
     merge['id_name'] = merge['id_name'].astype('category')
     merge['id_class'] = merge['id_name'].cat.codes
+
+    if args.use_database == 'CASIA':
+        merge = merge.sample(CASIA_SAMPLE)
+        print("Number of CASIA identities (class): {}".format(len(merge.id_name.unique())))
 
     dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
