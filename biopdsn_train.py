@@ -11,18 +11,18 @@ import torch
 
 
 if __name__ == '__main__':
-    wd = os.getcwd()
-    print("Wd: ",wd)
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
-    parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
+    #parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
+    parser.add_argument("-train_database","--train_database",choices=['RMFD','CASIA'],type=str,help="Which Database use to train")
 
     #train args
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-3,type=float)
-    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
+    #parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
+    parser.add_argument("--save_path","--save_path",help="Folder to save model checkpoints")
 
     #model args
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
@@ -30,15 +30,25 @@ if __name__ == '__main__':
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     
     args = parser.parse_args()
-    
+
+    if args.train_database == 'RMFD':
+        args.dfPath = "./lib/data/dataframe.pickle"
+        args.num_class = 403
+    elif args.train_database == 'CASIA':
+        args.dfPath = "./lib/data/CASIA_dataframe.pickle"
+        args.num_class = 1005 #this number may change, when you create CASIA_dataframe.pickle the number of identities is prompted
+    else:
+        print("Wrong train database")
+        exit(1)
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
     biopdsn = BioPDSN(args).to(device)
 
-    #logger = TensorBoardLogger('tb_logs',name="pdsn_contrastive_rmfd")
+    logger = TensorBoardLogger('pdsn_{}_logs'.format(args.train_database),name="pdsn_{}".format(args.train_database))
     
     checkpoint_callback = ModelCheckpoint(
-        dirpath='checkpoints_contrastive_rmfd/',
+        dirpath='checkpoints_pdsn_{}/'.format(args.train_database),
         filename='{epoch}-{val_acc_occ:.2f}',
         save_weights_only=True,
         verbose=True,

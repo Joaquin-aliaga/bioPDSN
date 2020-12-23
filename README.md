@@ -25,9 +25,18 @@ Face verification system for people wearing masks, based on Pairwise Differentia
     * `python create_dataframe.py --use_database "RMFD"`
     * `python create_dataframe.py --use_database "CASIA"`
 
-## Train
+## Prepare pretrained model
 1. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
-2. run `python biopdsn_train.py -num_class 403 -dfPath "./lib/data/{RMFD or CASIA}_dataframe.pickle" -rw "./weights/model-r50-am-lfw/model,00" --batch_size 64`
+
+## Train PDSN Loss
+1. run `python biopdsn_train.py --train_database {"CASIA" or "RMFD"}`
+
+## Train Contrastive Loss (not implemented yet)
+1. run `python biopdsn_train_contrastive.py --train_database {"CASIA" or "RMFD"}`
+
+## Train Triplet Loss
+1. run `python biopdsn_train_triplet.py --train_database {"CASIA" or "RMFD"}`
+
 
 ### Usefull guides
 * [Create VM instance Google Cloud Platform](https://cloud.google.com/ai-platform/deep-learning-vm/docs/pytorch_start_instance)

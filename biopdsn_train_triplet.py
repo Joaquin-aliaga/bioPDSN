@@ -13,44 +13,45 @@ import torch
 if __name__ == '__main__':
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
-    parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
+    #parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
+    parser.add_argument("-train_database","--train_database",choices=['RMFD','CASIA'],type=str,help="Which Database use to train")
 
     #train args
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-3,type=float)
-    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
+    #parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
-    parser.add_argument("-margin","--margin",help="Margin to use in Triplet Loss",default=1.5,type=float)
-    parser.add_argument("-tweight","--tweight",help="Triplet Loss weight",default=2.0,type=float)
+    parser.add_argument("--save_path","--save_path",help="Folder to save model checkpoints")
 
     #model args
-    #parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
-    #parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
-    #parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether norm input after mtcnn",default=True,type=bool)
-    #parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
-
-    args = parser.parse_args()
-    '''
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
-    args.cuda = not args.no_cuda and torch.cuda.is_available()
-    device = torch.device("cuda" if args.cuda else "cpu")
-    '''
     
+    args = parser.parse_args()
+
+    if args.train_database == 'RMFD':
+        args.dfPath = "./lib/data/dataframe_negatives.pickle"
+        args.num_class = 403
+    elif args.train_database == 'CASIA':
+        args.dfPath = "./lib/data/CASIA_dataframe_negatives.pickle"
+        args.num_class = 1005 #this number may change, when you create CASIA_dataframe 
+                            #the number of identities is prompted
+    else:
+        print("Wrong train database")
+        exit(1)
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
     biopdsn = BioPDSN(args).to(device)
 
-    logger = TensorBoardLogger('triplet_rmfd_logs',name="triplet_rmfd")
+    logger = TensorBoardLogger('triplet_{}_logs',name="triplet_{}")
     
     checkpoint_callback = ModelCheckpoint(
-        dirpath='checkpoints_triplet_rmfd/',
+        dirpath='checkpoints_triplet_{}/'.format(args.train_database),
         filename='{epoch}-{val_acc_occ:.2f}',
         save_weights_only=True,
-        #save_top_k=1,
         verbose=True,
         monitor='val_acc_occ',
         mode='max'
