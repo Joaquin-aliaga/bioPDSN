@@ -88,7 +88,7 @@ if __name__ == '__main__':
     if args.use_database == 'CASIA':
         keep_prop = CASIA_SAMPLE/merge.shape[0]
         lose_prop = 1 - keep_prop
-        merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42,stratify=merge.id_class)
+        merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42)
 
     dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
