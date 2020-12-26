@@ -3,7 +3,7 @@ import pandas as pd
 from tqdm import tqdm
 import numpy as np
 import argparse
-
+from sklearn.model_selection import train_test_split
 '''
 from google_drive_downloader import GoogleDriveDownloader as gdd
 # download dataset from link provided by
@@ -84,9 +84,11 @@ if __name__ == '__main__':
     merge['id_name'] = merge['id_name'].astype('category')
     merge['id_class'] = merge['id_name'].cat.codes
 
+    #take a subsample because in CASIA there're many more examples than in RMFD
     if args.use_database == 'CASIA':
-        merge = merge.sample(CASIA_SAMPLE)
-        print("Number of CASIA identities (class): {}".format(len(merge.id_name.unique())))
+        keep_prop = CASIA_SAMPLE/merge.shape[0]
+        lose_prop = 1 - keep_prop
+        merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42,stratify=merge.id_class)
 
     dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
