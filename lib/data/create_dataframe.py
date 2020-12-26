@@ -89,6 +89,7 @@ if __name__ == '__main__':
         keep_prop = CASIA_SAMPLE/merge.shape[0]
         lose_prop = 1 - keep_prop
         merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42)
+        print("Number of CASIA identities (class): {}".format(len(merge.id_name.unique())))
 
     dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
