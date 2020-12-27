@@ -35,7 +35,7 @@ if __name__ == '__main__':
         args.num_class = 403
     elif args.train_database == 'CASIA':
         args.dfPath = "./lib/data/CASIA_dataframe.pickle"
-        args.num_class = 1003 #this number may change if you create a new CASIA_dataframe. the number of identities is prompted when dataframe is created
+        args.num_class = 395 #this number may change if you create a new CASIA_dataframe. the number of identities is prompted when dataframe is created
     else:
         print("Wrong train database")
         exit(1)
