@@ -41,7 +41,7 @@ if __name__ == '__main__':
         exit(1)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    args.device = device
+    #args.device = device
     biopdsn = BioPDSN(args).to(device)
 
     logger = TensorBoardLogger('pdsn_{}_logs'.format(args.train_database),name="pdsn_{}".format(args.train_database))
