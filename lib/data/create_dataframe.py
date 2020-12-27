@@ -81,22 +81,23 @@ if __name__ == '__main__':
     
     merge = pd.merge(nonMaskDF,maskDF,on='id_name')
 
+    #take a subsample because in CASIA there're near 15M of examples
+    #and train with the complete dataset it will take much time
+    if args.use_database == 'CASIA':
+        counts = merge['id_name'].value_counts()
+        
+        # drop classes repeated less than CASIA_MIN_REPEATED_CLASSES
+        merge = merge[~merge['id_name'].isin(counts[counts < CASIA_MIN_REPEATED_CLASSES].index)]
+
+        keep_prop = CASIA_SAMPLE/merge.shape[0]
+        lose_prop = 1 - keep_prop
+        merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42,stratify= merge.id_name)
+        
     #adding class numbers to id_names
     merge['id_name'] = merge['id_name'].astype('category')
     merge['id_class'] = merge['id_name'].cat.codes
 
-    #take a subsample because in CASIA there're near 15M of examples
-    #and train with the complete dataset it will take much time
-    if args.use_database == 'CASIA':
-        counts = merge['id_class'].value_counts()
-        
-        # drop classes repeated less than CASIA_MIN_REPEATED_CLASSES
-        merge = merge[~merge['id_class'].isin(counts[counts < CASIA_MIN_REPEATED_CLASSES].index)]
-
-        keep_prop = CASIA_SAMPLE/merge.shape[0]
-        lose_prop = 1 - keep_prop
-        merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42,stratify= merge.id_class)
-        print("Number of CASIA identities (class): {}".format(len(merge.id_class.unique())))
+    print("Number of {} identities (class): {}".format(args.use_database,len(merge.id_class.unique())))
 
     dfName = './{}_dataframe.pickle'.format(args.use_database)
     print(f'saving Dataframe to: {dfName}')
