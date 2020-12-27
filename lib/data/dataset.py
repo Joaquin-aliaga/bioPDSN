@@ -26,6 +26,8 @@ class MaskDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
+        print("Path source: ",self.root+row['source'])
+        print("Path target: ",self.root+row['target'])
         source = cv2.imdecode(np.fromfile(self.root+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         target = cv2.imdecode(np.fromfile(self.root+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
         #negative = cv2.imdecode(np.fromfile(row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
