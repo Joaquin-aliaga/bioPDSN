@@ -9,6 +9,7 @@ from pytorch_lightning.loggers import TensorBoardLogger
 
 import torch
 
+CUDA_LAUNCH_BLOCKING=1
 
 if __name__ == '__main__':
     #data args
