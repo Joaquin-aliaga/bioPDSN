@@ -73,6 +73,8 @@ if __name__ == '__main__':
                     'target': str(imgPath),
                     'id_name': str(id)
                 }, ignore_index=True)
+            else:
+                print("Error reading {}".format(str(imgPath)))
 
     for subject in tqdm(list(nonMaskPath.iterdir()), desc='non masked photos'):
         id = subject.stem
@@ -83,6 +85,9 @@ if __name__ == '__main__':
                     'source': str(imgPath),
                     'id_name': str(id)
                 }, ignore_index=True)
+            else:
+                print("Error reading {}".format(str(imgPath)))
+
     
     merge = pd.merge(nonMaskDF,maskDF,on='id_name')
 
