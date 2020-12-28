@@ -28,8 +28,10 @@ class MaskDataset(Dataset):
         row = self.dataFrame.iloc[key]
         try:
             source = cv2.imdecode(np.fromfile(self.root+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        except e:
+        except Exception as e:
+            print(" #### ")
             print("Error Source path:",self.root+row['source'])
+            print(" ### ")
             print("Error ",e)
             exit(1)
         target = cv2.imdecode(np.fromfile(self.root+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
