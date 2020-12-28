@@ -4,6 +4,7 @@ from tqdm import tqdm
 import numpy as np
 import argparse
 from sklearn.model_selection import train_test_split
+import cv2
 '''
 from google_drive_downloader import GoogleDriveDownloader as gdd
 # download dataset from link provided by
@@ -66,18 +67,22 @@ if __name__ == '__main__':
     for subject in tqdm(list(maskPath.iterdir()), desc='mask photos'):
         id = subject.stem
         for imgPath in subject.iterdir():
-            maskDF = maskDF.append({
-                'target': str(imgPath),
-                'id_name': str(id)
-            }, ignore_index=True)
+            img = cv2.imread(str(imgPath))
+            if(img is not None):
+                maskDF = maskDF.append({
+                    'target': str(imgPath),
+                    'id_name': str(id)
+                }, ignore_index=True)
 
     for subject in tqdm(list(nonMaskPath.iterdir()), desc='non masked photos'):
         id = subject.stem
         for imgPath in subject.iterdir():
-            nonMaskDF = nonMaskDF.append({
-                'source': str(imgPath),
-                'id_name': str(id)
-            }, ignore_index=True)
+            img = cv2.imread(str(imgPath))
+            if(img is not None):        
+                nonMaskDF = nonMaskDF.append({
+                    'source': str(imgPath),
+                    'id_name': str(id)
+                }, ignore_index=True)
     
     merge = pd.merge(nonMaskDF,maskDF,on='id_name')
 

@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-28 10:47:18
-@modify date 2020-12-28 11:00:26
+@modify date 2020-12-28 11:51:56
 @desc Check and clean dataframe for bioPDSN training, trying to read imgs and delete the ones that can't be readed
 """
 
@@ -53,6 +53,8 @@ class CheckDataset(Dataset):
 
 
 if __name__ == "__main__":
+    df = pd.read_pickle('./CASIA_dataframe.pickle')
+    
     
 
 
