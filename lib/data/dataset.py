@@ -26,16 +26,10 @@ class MaskDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        try:
-            source = cv2.imdecode(np.fromfile(self.root+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        except Exception as e:
-            print(" #### ")
-            print("Error Source path:",self.root+row['source'])
-            print(" ### ")
-            print("Error ",e)
-            exit(1)
-        target = cv2.imdecode(np.fromfile(self.root+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-        #negative = cv2.imdecode(np.fromfile(row['negative'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        #source = cv2.imdecode(np.fromfile(self.root+row['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        #target = cv2.imdecode(np.fromfile(self.root+row['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+        source = cv2.imread(self.root+row['source'])
+        target = cv2.imread(self.root+row['target'])
         return {
             'source': self.transformations(source),
             'target': self.transformations(target),
