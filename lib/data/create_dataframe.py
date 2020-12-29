@@ -102,6 +102,7 @@ if __name__ == '__main__':
         keep_prop = CASIA_SAMPLE/merge.shape[0]
         lose_prop = 1 - keep_prop
         merge, _ = train_test_split(merge, test_size=lose_prop, random_state=42,stratify= merge.id_name)
+        merge.reset_index(drop=True,inplace=True)
         
     #adding class numbers to id_names
     merge['id_name'] = merge['id_name'].astype('category')
