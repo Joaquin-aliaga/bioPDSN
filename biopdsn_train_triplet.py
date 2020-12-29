@@ -27,7 +27,7 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
-    parser.add_argument("-m","--margin",default=1.5,type=float,heĺp="Margin used in triplet loss")
+    parser.add_argument("-m","--margin",help="Margin used in triplet loss",default=1.5,type=float)
 
     args = parser.parse_args()
 
