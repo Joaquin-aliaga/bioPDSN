@@ -35,7 +35,7 @@ if __name__ == '__main__':
         args.num_class = 403
     elif args.train_database == 'CASIA':
         args.dfPath = "./lib/data/CASIA_dataframe_negatives.pickle"
-        args.num_class = 1003 #this number may change if you create CASIA_dataframe 
+        args.num_class = 395 #this number may change if you create CASIA_dataframe 
                             #the number of identities is prompted when you create it.
     else:
         print("Wrong train database")
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     args.device = device
     biopdsn = BioPDSN(args).to(device)
 
-    logger = TensorBoardLogger('triplet_{}_logs',name="triplet_{}")
+    logger = TensorBoardLogger('triplet_{}_logs'.format(args.train_database),name="triplet_{}".format(args.train_database))
     
     checkpoint_callback = ModelCheckpoint(
         dirpath='checkpoints_triplet_{}/'.format(args.train_database),
