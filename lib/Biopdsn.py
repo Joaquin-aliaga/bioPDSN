@@ -32,6 +32,8 @@ class BioPDSN(pl.LightningModule):
         self.num_workers = args.num_workers
         self.lr = args.lr
         self.num_class = args.num_class
+        #test args
+        self.test_path = args.test_path
         
         #loss criterion
         self.loss_cls = nn.CrossEntropyLoss().to(self.device)
@@ -85,6 +87,10 @@ class BioPDSN(pl.LightningModule):
         train, validate = train_test_split(self.df, test_size=0.2, random_state=42,stratify=self.df.id_class)
         self.trainDF = MaskDataset(train,root,self.imageShape[-2:])
         self.validateDF = MaskDataset(validate,root,self.imageShape[-2:])
+
+        if(self.test_path):
+            test = pd.read_pickle(self.test_path)
+            self.testDF = MaskDataset(test,root,self.imageShape[-2:])
         
     def get_faces(self,batch):
         if (type(batch) == list):
@@ -126,6 +132,9 @@ class BioPDSN(pl.LightningModule):
     def val_dataloader(self):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
+    def test_dataloader(self):
+        return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
+
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.parameters()),
                                 lr=self.lr)
@@ -191,5 +200,9 @@ class BioPDSN(pl.LightningModule):
 
         return {'val_loss': avgLoss, 'log': tensorboardLogs}
 
+    def test_step(self, batch, batch_idx):
+        sources, targets, labels = batch['source'], batch['target'],batch['class']
+        labels = labels.flatten()
 
+        f_clean_masked, f_occ_masked, fc, fc_occ = self(sources,targets)
 

@@ -24,6 +24,9 @@ if __name__ == '__main__':
     #parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
+    #test args
+    parser.add_argument("-t,--test_path",default=None, type=str,help="Path to test dataframe")
+
     #model args
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
