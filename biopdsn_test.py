@@ -20,13 +20,26 @@ if __name__ == '__main__':
 
     #model args
 
-    parser.add_argument("-model_weights","--model_weights",choices = [""],help="Which model weights use",default=None,type=str)
+    parser.add_argument("-model","--model",choices = ["RMFD-PDSN","RMFD-TRIPLET","CASIA-PDSN","CASIA-TRIPLET"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     parser.add_argument("-post_process","--post_process",help="Whether use normalization after mtcnn (0=disable, 1=enable)",default=0,type=int)
     
     args = parser.parse_args()
+
+    if args.model == "RMFD-PDSN":
+        args.model_weights = "./checkpoints_pdsn_rmfd/epoch=19-val_acc_occ=0.98.ckpt"
+        args.num_class = 403
+    elif args.model == "RMFD-TRIPLET":
+        args.model_weights = "./checkpoints_triplet_rmfd/epoch=18-val_acc_occ=0.98.ckpt"
+        args.num_class = 403
+    elif args.model == "CASIA-PDSN":
+        args.model_weights = "./checkpoints_pdsn_CASIA/epoch=19-val_acc_occ=0.51.ckpt"
+        args.num_class = 395
+    elif args.model == "CASIA-TRIPLET":
+        args.model_weights = "./checkpoints_triplet_CASIA/epoch=19-val_acc_occ=0.52.ckpt"
+        args.num_class = 395
     
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe-pickle".format(args.test_database)
 
