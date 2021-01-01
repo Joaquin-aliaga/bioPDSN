@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:31
-@modify date 2021-01-01 17:49:54
+@modify date 2021-01-01 20:15:52
 @desc [description]
 """
 
@@ -39,8 +39,6 @@ class BioPDSN(pl.LightningModule):
         self.num_workers = args.num_workers
         self.lr = args.lr
         self.num_class = args.num_class
-        #test args
-        self.test_path = args.test_path
         
         #loss criterion
         self.loss_cls = nn.CrossEntropyLoss().to(self.device)
