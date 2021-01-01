@@ -1,141 +1,49 @@
-import os
-import pandas as pd
-import numpy as np
-from lib.Biopdsn import BioPDSN
-#from lib.models.layer import cosine_sim, MarginCosineProduct
+from lib.face import FaceVerificator
+
 import argparse
 import torch
-import torch.nn as nn
-from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
-import cv2
-from facenet_pytorch import MTCNN
-from PIL import Image
-
+from pytorch_lightning import Trainer
+from pathlib import Path
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Params for face verification test')
+    
     #data args
-    parser = argparse.ArgumentParser(description='Params for bioPDSN train')
-    parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",default=None,type=str)
-    parser.add_argument("-test_folder","--test_folder",help="Path to test folder",default=None,type=str)
-    parser.add_argument("-rmfd_path","--rmfd_path",help="Path to RMFD dataset",default=None,type=str)
-    #train args
+    #parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",default=None,type=str)
+    parser.add_argument("-test_database","--test_database",choices=["easy","hard","mask","nonmask"])
+    #test args
     parser.add_argument("-b","--batch_size",help="batch size", default=1,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
-    parser.add_argument("-num_class","--num_class",help="Number of people (class)", type=int)
+    parser.add_argument("-num_class","--num_class",default=395,help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
     #model args
-    parser.add_argument("-model_resume","--model_resume",help="Wheter use trained weights",default=True,type=bool)
     parser.add_argument("-model_weights","--model_weights",help="Path to model (trained) weights",default=None,type=str)
-    #parser.add_argument("-use_mtcnn","--use_mtcnn",help="Wheter use MTCNN to detect face",default="False",type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
-    #parser.add_argument("-device", "--device", help="Which device use (cpu or gpu)", default='cpu', type=str)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
-    parser.add_argument("-mtcnn_norm","--mtcnn_norm",help="Whether use normalization after mtcnn (0=disable, 1=available)",default=0,type=int)
-    parser.add_argument("-k","--keep_all",help="Wheter use all faces detected or just one with highest prob",default=False,type=bool)
-
+    parser.add_argument("-post_process","--post_process",help="Whether use normalization after mtcnn (0=disable, 1=enable)",default=0,type=int)
+    
     args = parser.parse_args()
-    '''
-    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
-    args.cuda = not args.no_cuda and torch.cuda.is_available()
-    device = torch.device("cuda" if args.cuda else "cpu")
-    '''
     
+    args.dfPath = "./lib/data/{}_dataframe-pickle".format(args.test_database)
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    args.device = device
+
+    model = FaceVerificator(args).to(device)
+
+    trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0)
+
+    output = trainer.test(model)
+
+    print("Output type: ",type(output))
+    print("Output shape: ",output.shape)
+
+    dfName = './test/{}_outputs.pickle'.format(args.test_database)
+    print(f'saving Dataframe to: {dfName}')
+    output.to_pickle(dfName)
     
-    imageShape = [int(x) for x in args.input_size.split(',')]
 
-    transformations = Compose([
-            ToPILImage(),
-            Resize((112, 112)),
-            ToTensor(), # [0, 1]
-        ])
-
-    cos_sim = nn.CosineSimilarity()
-    #softmax = nn.Softmax()
-    mtcnn_norm = None
-    if(args.mtcnn_norm == 1):
-        print("Using normalization after mtcnn")
-        mtcnn_norm = True
-    else:
-        mtcnn_norm = False  
-    
-    mtcnn = MTCNN(image_size=imageShape[1], min_face_size=20, 
-                            device = device, post_process=mtcnn_norm,
-                            keep_all=False,select_largest=True)
-
-    model = BioPDSN(args)
-
-    if args.model_resume:
-        print("Loading model weights (trained)...")
-        model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
-        print("Model weights loaded!")
-    model = model.to(device)
-    model.eval()
-
-    pd_names = ['id','ImgEnroll','ImgQuery']
-    root_folder_pos = args.test_folder+'/positivos_faciles/'
-    root_folder_neg = args.test_folder+'/negativos_faciles/'
-
-    print("Loading dataframe")
-    #df = pd.read_pickle(args.rmfd_path + 'dataframe.pickle')
-    df_pos = pd.read_csv(root_folder_pos+'pairs.csv',names=pd_names)
-    df_neg = pd.read_csv(root_folder_neg+'pairs.csv',names=pd_names)
-    print("Dataframe loaded!")
-    
-    row_pos = df_pos.iloc[0]
-    source_pos = Image.open(root_folder_pos+row_pos['ImgEnroll'])
-    target_pos = Image.open(root_folder_pos+row_pos['ImgQuery'])
-    #source_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['source'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    #target_pos = cv2.imdecode(np.fromfile(args.rmfd_path + row_pos['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    #label_pos = torch.tensor([row_pos['id_class']], dtype=torch.long).to(device)
-    #label_pos = torch.tensor(40, dtype=torch.long).to(device)
-    #source_pos = transformations(source_pos)
-    #target_pos = transformations(target_pos)
-
-    source_pos = mtcnn(source_pos)
-    target_pos = mtcnn(target_pos)
-    
-    f_clean_masked, f_occ_masked, fc_pos, fc_occ_pos, f_diff, mask = model(source_pos,target_pos)
-
-    sim = cos_sim(fc_pos,fc_occ_pos)
-    print("Similitud positivos: ",sim)
-    '''
-    score_pos = model.classifier(fc_occ_pos, label_pos)
-    valor_maximo, pred_pos = torch.max(score_pos, dim=1)
-    score_softmax = softmax(fc_occ_pos)
-    _, pred_pos_softmax = torch.max(score_softmax, dim=1)
-    print("Clase positivo: {}, Prediccion: {}, Prediccion Softmax: {}".format(label_pos,pred_pos,pred_pos_softmax))
-    '''  
-        
-    row_neg = df_neg.iloc[2]
-    source_neg = Image.open(root_folder_neg+row_neg['ImgEnroll'])
-    target_neg = Image.open(root_folder_neg+row_neg['ImgQuery'])
-    #target_neg = cv2.imdecode(np.fromfile(args.rmfd_path + row_neg['target'], dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-    #label_neg = torch.tensor([row_neg['id_class']], dtype=torch.long).to(device)
-    
-    #target_neg = transformations(target_neg)
-    source_neg = mtcnn(source_neg)
-    target_neg = mtcnn(target_neg)
-
-    f_clean_masked, f_occ_masked, fc_neg, fc_occ_neg, f_diff, mask = model(source_neg,target_neg)
-
-    sim_neg = cos_sim(fc_neg,fc_occ_neg)
-    print("Similitud negativos: ",sim_neg)
-    '''
-    score_neg = model.classifier(fc_occ_neg, label_neg)
-    _, pred_neg = torch.max(score_neg, dim=1)
-    score_softmax = softmax(fc_occ_neg)
-    _, pred_neg_softmax = torch.max(score_softmax, dim=1)
-    print("Clase negativo: {}, Prediccion: {}, Prediccion softmax: {}".format(label_neg,pred_neg,pred_neg_softmax))
-    '''
-
-
-        
-
-    
 
 

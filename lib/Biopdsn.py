@@ -1,6 +1,13 @@
+"""
+@author Joaquin Aliaga Gonzalez
+@email joaliaga.g@gmail.com
+@create date 2021-01-01 17:08:31
+@modify date 2021-01-01 17:49:54
+@desc [description]
+"""
+
 from lib.models.resnet import Resnet
 from lib.models.layer import MarginCosineProduct
-from facenet_pytorch import MTCNN
 from lib.data.dataset import MaskDataset
 
 import pytorch_lightning as pl
@@ -88,10 +95,6 @@ class BioPDSN(pl.LightningModule):
         self.trainDF = MaskDataset(train,root,self.imageShape[-2:])
         self.validateDF = MaskDataset(validate,root,self.imageShape[-2:])
 
-        if(self.test_path):
-            test = pd.read_pickle(self.test_path)
-            self.testDF = MaskDataset(test,root,self.imageShape[-2:])
-        
     def get_faces(self,batch):
         if (type(batch) == list):
             batch = [img.resize(self.imageShape[1]) for img in batch]
@@ -132,9 +135,6 @@ class BioPDSN(pl.LightningModule):
     def val_dataloader(self):
         return DataLoader(self.validateDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=True)
     
-    def test_dataloader(self):
-        return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
-
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.parameters()),
                                 lr=self.lr)
@@ -199,10 +199,4 @@ class BioPDSN(pl.LightningModule):
         tensorboardLogs = {'val_loss':avgLoss, 'val_acc_clean':avgAcc_clean, 'val_acc_occ':avgAcc_occ}
 
         return {'val_loss': avgLoss, 'log': tensorboardLogs}
-
-    def test_step(self, batch, batch_idx):
-        sources, targets, labels = batch['source'], batch['target'],batch['class']
-        labels = labels.flatten()
-
-        f_clean_masked, f_occ_masked, fc, fc_occ = self(sources,targets)
 

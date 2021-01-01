@@ -31,6 +31,8 @@ class MaskDataset(Dataset):
         source = cv2.imread(self.root+row['source'])
         target = cv2.imread(self.root+row['target'])
         return {
+            'source_path' : row['source'],
+            'target_path' : row['target'],
             'source': self.transformations(source),
             'target': self.transformations(target),
             #'negative': self.transformations(negative),
