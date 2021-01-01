@@ -41,7 +41,7 @@ if __name__ == '__main__':
         args.model_weights = "./checkpoints_triplet_CASIA/epoch=19-val_acc_occ=0.52.ckpt"
         args.num_class = 395
     
-    args.dfPath = "./lib/data/BioDBv3/{}_dataframe-pickle".format(args.test_database)
+    args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
