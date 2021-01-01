@@ -2,13 +2,13 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-29 17:42:20
-@modify date 2020-12-30 19:17:07
+@modify date 2021-01-01 16:56:45
 @desc [description]
 """
 import pandas as pd
 
 def concat_dataframes(root,path_pos,path_neg):
-    path_pos = root+path_pos,
+    path_pos = root+path_pos
     path_neg = root+path_neg
     names = ['id','source','target']
     df_pos = pd.read_csv(path_pos+'pairs.csv',names=names)
