@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-01 20:04:41
+@modify date 2021-01-01 20:34:34
 @desc [description]
 """
 
@@ -21,6 +21,7 @@ import pandas as pd
 
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
 
 import os
 
