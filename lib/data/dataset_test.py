@@ -15,19 +15,25 @@ class FaceDataset(Dataset):
     def __init__(self, dataFrame,root,input_size):
         self.dataFrame = dataFrame
         self.root = root
+
+        self.transformations = Compose([
+            ToPILImage(),
+            Resize((input_size[0], input_size[1])),
+        ])
+    
         
     def __getitem__(self, key,resize=(960,1280)):
         if isinstance(key, slice):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        source = Image.open(self.root+row['source']).resize(resize)
-        target = Image.open(self.root+row['target']).resize(resize)
+        source = cv2.imread(self.root+row['source'])
+        target = cv2.imread(self.root+row['target'])
         return {
             'source_path' : row['source'],
             'target_path' : row['target'],
-            'source': source,
-            'target': target,
+            'source': self.transformations(source),
+            'target': self.transformations(target),
             #'negative': self.transformations(negative),
             'class': tensor([row['id_class']], dtype=long), # pylint: disable=not-callable
         }
