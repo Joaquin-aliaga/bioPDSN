@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 11:55:19
+@modify date 2021-01-02 12:12:08
 @desc [description]
 """
 
@@ -66,7 +66,9 @@ class FaceVerificator(nn.Module):
         self.dataloader = self.test_dataloader()
 
     def get_faces(self,img):
-        return self.mtcnn(img)
+        #img is a torch.tensor with shape [N,C,H,W]
+        #mtcnn needs [N,H,W,C]
+        return self.mtcnn(img.permute(0,2,3,1))
 
     def get_embeddings(self,source,target):
         source = self.get_faces(source)
