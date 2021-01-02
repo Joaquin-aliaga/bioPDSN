@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 12:38:31
+@modify date 2021-01-02 12:41:02
 @desc [description]
 """
 
@@ -70,6 +70,7 @@ class FaceVerificator(nn.Module):
         #mtcnn needs [N,H,W,C]
         #Faces detection
         face_matches, probs = self.mtcnn.detect(img.permute(0,2,3,1))
+        print("Face matches type:", type(face_matches))
         if (face_matches is not None):
             #crop face
             return self.mtcnn(img.permute(0,2,3,1))
