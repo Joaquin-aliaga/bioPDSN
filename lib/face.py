@@ -2,13 +2,13 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 12:48:12
+@modify date 2021-01-02 17:46:37
 @desc [description]
 """
 
 #from lib.models.resnet import Resnet
 #from lib.models.layer import MarginCosineProduct
-from lib.data.dataset import MaskDataset
+from lib.data.dataset_test import FaceDataset
 from lib.Biopdsn import BioPDSN
 from facenet_pytorch import MTCNN
 
@@ -22,6 +22,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 
 import os
 
@@ -50,7 +51,7 @@ class FaceVerificator(nn.Module):
             path and the remaining faces are saved to <save_path>1, <save_path>2 etc.
         '''
         self.post_process = False if args.post_process == 0 else True
-        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
+        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device),
         select_largest=False, post_process=self.post_process)
         
         #model args
@@ -83,11 +84,11 @@ class FaceVerificator(nn.Module):
         source = self.get_face(source)
         target = self.get_face(target)
 
-        if(source is None or target is None):
-            fc = None
-            fc_occ = None
-        else:
-            _, _, fc, fc_occ = self.model(source,target)
+        source = ToTensor(source)
+        target = ToTensor(target)
+
+
+        _, _, fc, fc_occ = self.model(source,target)
             
         return fc, fc_occ
         
@@ -95,17 +96,14 @@ class FaceVerificator(nn.Module):
     def forward(self,source,target):
         emb_source, emb_target = self.get_embeddings(source,target)
 
-        if(emb_source is None or emb_target is None):
-            return 0.0
-        else:
-            sim = self.cos_sim(emb_source,emb_target)
-            return sim
+        sim = self.cos_sim(emb_source,emb_target)
+        return sim
 
     def prepare_data(self):
         self.testDF = pd.read_pickle(self.dfPath)
         root = os.getcwd()+'/lib/data/'
         print("Dataset shape:",self.testDF.shape)
-        self.testDF = MaskDataset(self.testDF,root,input_size=[1280,960])
+        self.testDF = FaceDataset(self.testDF,root,input_size=[1280,960])
 
     def test_dataloader(self):
         return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
