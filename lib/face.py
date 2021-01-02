@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 11:37:59
+@modify date 2021-01-02 11:43:55
 @desc [description]
 """
 
@@ -95,9 +95,11 @@ class FaceVerificator(nn.Module):
     def test(self):
         with torch.set_grad_enabled(False):
         
-            for batch_idx,batch in tqdm(enumerate(self.dataloader),desc="Running Test"):
+            for batch_idx,batch in enumerate(self.dataloader):
+                print("Batch type: ",type(batch))
+                print("Batch size: ",batch.size)
                 # Transfer to GPU
-                batch = batch.to(self.device)
+                #batch = batch.to(self.device)
                 step_output = self.test_step(batch,batch_idx)
                 self.output = pd.concat([self.output,step_output])
             

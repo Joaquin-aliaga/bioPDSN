@@ -48,7 +48,7 @@ if __name__ == '__main__':
     args.device = torch.device("cuda:0" if use_cuda else "cpu")
     torch.backends.cudnn.benchmark = True
 
-    model = FaceVerificator(args)
+    model = FaceVerificator(args).to(args.device)
 
     #model.test() should return a DF with scores
     output = model.test()
