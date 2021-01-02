@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 12:12:08
+@modify date 2021-01-02 12:38:31
 @desc [description]
 """
 
@@ -50,7 +50,7 @@ class FaceVerificator(nn.Module):
             path and the remaining faces are saved to <save_path>1, <save_path>2 etc.
         '''
         self.post_process = False if args.post_process == 0 else True
-        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device, 
+        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
         select_largest=False, keep_all=False, post_process=self.post_process)
         
         #model args
@@ -65,25 +65,37 @@ class FaceVerificator(nn.Module):
         self.prepare_data()
         self.dataloader = self.test_dataloader()
 
-    def get_faces(self,img):
+    def get_face(self,img):
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
-        return self.mtcnn(img.permute(0,2,3,1))
-
+        #Faces detection
+        face_matches, probs = self.mtcnn.detect(img.permute(0,2,3,1))
+        if (face_matches is not None):
+            #crop face
+            return self.mtcnn(img.permute(0,2,3,1))
+        else:
+            return face_matches
     def get_embeddings(self,source,target):
-        source = self.get_faces(source)
-        target = self.get_faces(target)
+        source = self.get_face(source)
+        target = self.get_face(target)
 
-        _, _, fc, fc_occ = self.model(source,target)
-        
+        if(source is None or target is None):
+            fc = None
+            fc_occ = None
+        else:
+            _, _, fc, fc_occ = self.model(source,target)
+            
         return fc, fc_occ
         
     #return face verification confidence
     def forward(self,source,target):
         emb_source, emb_target = self.get_embeddings(source,target)
-        sim = self.cos_sim(emb_source,emb_target)
 
-        return sim
+        if(emb_source is None or emb_target is None):
+            return 0.0
+        else:
+            sim = self.cos_sim(emb_source,emb_target)
+            return sim
 
     def prepare_data(self):
         self.testDF = pd.read_pickle(self.dfPath)
