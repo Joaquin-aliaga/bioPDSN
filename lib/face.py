@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 20:07:11
+@modify date 2021-01-02 20:09:46
 @desc [description]
 """
 
@@ -51,7 +51,7 @@ class FaceVerificator(nn.Module):
             path and the remaining faces are saved to <save_path>1, <save_path>2 etc.
         '''
         self.post_process = False if args.post_process == 0 else True
-        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device),
+        self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device,
         select_largest=False, post_process=self.post_process)
         
         #model args
