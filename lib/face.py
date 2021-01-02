@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-01 20:34:34
+@modify date 2021-01-01 21:49:02
 @desc [description]
 """
 
@@ -60,14 +60,12 @@ class FaceVerificator(pl.LightningModule):
         self.model = self.model.to(self.device)
         self.model.eval()
 
-    def get_faces(self,batch):
-        if (type(batch) == list):
-            batch = [img.resize(self.imageShape[1]) for img in batch]
-        return self.mtcnn(batch)
+    def get_faces(self,img):
+        return self.mtcnn(img)
 
     def get_embeddings(self,source,target):
-        source = self.mtcnn(source)
-        target = self.mtcnn(target)
+        source = self.get_faces(source)
+        target = self.get_faces(target)
 
         _, _, fc, fc_occ = self.model(source,target)
         
@@ -84,7 +82,7 @@ class FaceVerificator(pl.LightningModule):
         self.testDF = pd.read_pickle(self.dfPath)
         root = os.getcwd()+'/lib/data/'
         print("Dataset shape:",self.testDF.shape)
-        self.testDF = MaskDataset(self.testDF,root,self.imageShape[-2:])
+        self.testDF = MaskDataset(self.testDF,root,self.imageShape[-2:],input_size=[1280,960])
 
     def test_dataloader(self):
         return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
@@ -104,6 +102,8 @@ class FaceVerificator(pl.LightningModule):
                 'similarity': sim
 
             }, ignore_index=True)
+        
+        return output
         
         
 
