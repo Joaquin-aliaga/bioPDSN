@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-01 21:55:13
+@modify date 2021-01-01 22:00:12
 @desc [description]
 """
 
@@ -103,7 +103,7 @@ class FaceVerificator(pl.LightningModule):
 
             }, ignore_index=True)
         
-        return output
+        return self.output
         
         
 
