@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 11:48:02
+@modify date 2021-01-02 11:55:19
 @desc [description]
 """
 
@@ -108,6 +108,9 @@ class FaceVerificator(nn.Module):
     def test_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         sources_path, targets_path = batch['source_path'], batch['target_path']
+
+        print("Sources type: ",type(sources))
+        print("Sources shape: ",sources.shape)
 
         sims = self(sources,targets)
 

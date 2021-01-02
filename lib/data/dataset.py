@@ -11,7 +11,7 @@ from torchvision.transforms import Compose, Resize, ToPILImage, ToTensor
 import os
 
 class MaskDataset(Dataset):
-    def __init__(self, dataFrame,root,input_size=[112,112]):
+    def __init__(self, dataFrame,root,input_size):
         self.dataFrame = dataFrame
         self.root = root
         
