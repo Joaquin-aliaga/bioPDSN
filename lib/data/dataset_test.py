@@ -20,9 +20,8 @@ class FaceDataset(Dataset):
             ToPILImage(),
             Resize((input_size[0], input_size[1])),
         ])
-    
-        
-    def __getitem__(self, key,resize=(960,1280)):
+
+    def __getitem__(self, key):
         if isinstance(key, slice):
             raise NotImplementedError('slicing is not supported')
         
