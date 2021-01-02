@@ -2,20 +2,20 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-01 22:00:12
+@modify date 2021-01-02 11:26:25
 @desc [description]
 """
 
-from lib.models.resnet import Resnet
-from lib.models.layer import MarginCosineProduct
+#from lib.models.resnet import Resnet
+#from lib.models.layer import MarginCosineProduct
 from lib.data.dataset import MaskDataset
 from lib.Biopdsn import BioPDSN
 from facenet_pytorch import MTCNN
 
-import pytorch_lightning as pl
+from tqdm import tqdm
 
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+#from sklearn.model_selection import train_test_split
+#from sklearn.metrics import accuracy_score
 
 import pandas as pd
 
@@ -25,9 +25,10 @@ from torch.utils.data import DataLoader
 
 import os
 
-class FaceVerificator(pl.LightningModule):
+class FaceVerificator(nn.Module):
     def __init__(self,args):
         super(FaceVerificator,self).__init__()
+        self.device = args.device
         self.output = pd.DataFrame()
         
         #data args
@@ -42,11 +43,11 @@ class FaceVerificator(pl.LightningModule):
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         '''
         select_largest {bool} -- If True, if multiple faces are detected, the largest is returned.
- |          If False, the face with the highest detection probability is returned.
- |          (default: {True})
- |      keep_all {bool} -- If True, all detected faces are returned, in the order dictated by the
- |          select_largest parameter. If a save_path is specified, the first face is saved to that
- |          path and the remaining faces are saved to <save_path>1, <save_path>2 etc.
+            If False, the face with the highest detection probability is returned.
+                (default: {True})
+        keep_all {bool} -- If True, all detected faces are returned, in the order dictated by the
+            select_largest parameter. If a save_path is specified, the first face is saved to that
+            path and the remaining faces are saved to <save_path>1, <save_path>2 etc.
         '''
         self.post_process = False if args.post_process == 0 else True
         self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device, 
@@ -59,6 +60,10 @@ class FaceVerificator(pl.LightningModule):
         print("Model weights loaded!")
         self.model = self.model.to(self.device)
         self.model.eval()
+
+        #prepare data
+        self.prepare_data()
+        self.dataloader = self.test_dataloader()
 
     def get_faces(self,img):
         return self.mtcnn(img)
@@ -86,16 +91,29 @@ class FaceVerificator(pl.LightningModule):
 
     def test_dataloader(self):
         return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
- 
+
+    def test(self):
+        with torch.set_grad_enabled(False):
+        
+            for batch_idx,batch in tqdm(enumerate(self.test_dataloader),desc="Testing"):
+                # Transfer to GPU
+                batch = batch.to(self.device)
+                step_output = self.test_step(batch,batch_idx)
+                self.output = pd.concat([self.output,step_output])
+            
+        return self.output
+
     def test_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         sources_path, targets_path = batch['source_path'], batch['target_path']
 
         sims = self(sources,targets)
 
+        step_output = pd.DataFrame()
+
         for (source_path,target_path,label,sim) in zip(sources_path,targets_path,labels,sims):
 
-            self.output = self.output.append({
+            step_output = step_output.append({
                 'source': source_path,
                 'target': target_path,
                 'class': label,
@@ -103,7 +121,7 @@ class FaceVerificator(pl.LightningModule):
 
             }, ignore_index=True)
         
-        return self.output
+        return step_output
         
         
 

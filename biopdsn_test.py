@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument("-b","--batch_size",help="batch size", default=1,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)
     parser.add_argument("-lr","--lr",help="Starting learning rate", default=1.0e-1,type=float)
-    parser.add_argument("-num_class","--num_class",default=403,help="Number of people (class)", type=int)
+    #parser.add_argument("-num_class","--num_class",default=403,help="Number of people (class)", type=int)
     parser.add_argument("-max_epochs","--max_epochs",help="Maximum epochs to train",default=10,type=int)
 
     #model args
@@ -43,13 +43,15 @@ if __name__ == '__main__':
     
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # CUDA for PyTorch
+    use_cuda = torch.cuda.is_available()
+    args.device = torch.device("cuda:0" if use_cuda else "cpu")
+    torch.backends.cudnn.benchmark = True
 
-    model = FaceVerificator(args).to(device)
+    model = FaceVerificator(args)
 
-    trainer = Trainer(gpus=1 if torch.cuda.is_available() else 0)
-
-    output = trainer.test(model)
+    #model.test() should return a DF with scores
+    output = model.test()
 
     print("Output type: ",type(output))
     print("Output shape: ",output.shape)
