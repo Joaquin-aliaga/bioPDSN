@@ -13,6 +13,7 @@ import os
 
 class FaceDataset(Dataset):
     def __init__(self, dataFrame,root,input_size):
+        super(FaceDataset,self).__init__()
         self.dataFrame = dataFrame
         self.root = root
 
