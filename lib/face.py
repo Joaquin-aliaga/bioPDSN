@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 12:41:02
+@modify date 2021-01-02 12:43:46
 @desc [description]
 """
 
@@ -51,7 +51,7 @@ class FaceVerificator(nn.Module):
         '''
         self.post_process = False if args.post_process == 0 else True
         self.mtcnn = MTCNN(image_size=self.imageShape[1], device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
-        select_largest=False, keep_all=False, post_process=self.post_process)
+        select_largest=False, post_process=self.post_process)
         
         #model args
         self.model = BioPDSN(args)
@@ -70,7 +70,8 @@ class FaceVerificator(nn.Module):
         #mtcnn needs [N,H,W,C]
         #Faces detection
         face_matches, probs = self.mtcnn.detect(img.permute(0,2,3,1))
-        print("Face matches type:", type(face_matches))
+        print("Face matches type: ", type(face_matches))
+        print("Face matches shape: ",face_matches.shape)
         if (face_matches is not None):
             #crop face
             return self.mtcnn(img.permute(0,2,3,1))
