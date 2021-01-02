@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 11:26:25
+@modify date 2021-01-02 11:35:31
 @desc [description]
 """
 
@@ -95,7 +95,7 @@ class FaceVerificator(nn.Module):
     def test(self):
         with torch.set_grad_enabled(False):
         
-            for batch_idx,batch in tqdm(enumerate(self.test_dataloader),desc="Testing"):
+            for batch_idx,batch in enumerate(self.test_dataloader):
                 # Transfer to GPU
                 batch = batch.to(self.device)
                 step_output = self.test_step(batch,batch_idx)
