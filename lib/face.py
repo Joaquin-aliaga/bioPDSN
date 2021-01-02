@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 17:46:37
+@modify date 2021-01-02 20:07:11
 @desc [description]
 """
 
@@ -70,16 +70,8 @@ class FaceVerificator(nn.Module):
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
         #Faces detection
-        face_matches, probs = self.mtcnn.detect(img.permute(0,2,3,1))
-        print("Face matches type: ", type(face_matches))
-        print("Face matches shape: ",face_matches.shape)
-        for element in face_matches:
-            print("element: ",element)
-        if (face_matches is not None):
-            #crop face
-            return self.mtcnn(img.permute(0,2,3,1))
-        else:
-            return face_matches
+        return self.mtcnn(img)
+        
     def get_embeddings(self,source,target):
         source = self.get_face(source)
         target = self.get_face(target)
