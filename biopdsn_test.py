@@ -51,7 +51,9 @@ if __name__ == '__main__':
     model = FaceVerificator(args).to(args.device)
 
     #model.test() should return a DF with scores
+    print("Running test")
     output = model.test()
+    print("Test finished!")
 
     print("Output type: ",type(output))
     print("Output shape: ",output.shape)

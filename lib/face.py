@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 11:43:55
+@modify date 2021-01-02 11:48:02
 @desc [description]
 """
 
@@ -97,7 +97,7 @@ class FaceVerificator(nn.Module):
         
             for batch_idx,batch in enumerate(self.dataloader):
                 print("Batch type: ",type(batch))
-                print("Batch size: ",batch.size)
+                #print("Batch size: ",batch.size)
                 # Transfer to GPU
                 #batch = batch.to(self.device)
                 step_output = self.test_step(batch,batch_idx)
