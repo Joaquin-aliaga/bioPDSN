@@ -29,13 +29,15 @@ class FaceDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        source = cv2.imread(self.root+row['source'])
-        source.resize(self.input_size)
+        #source = cv2.imread(self.root+row['source'])
+        source = Image.open(self.root+row['source'])
+        source = source.resize(self.input_size)
         if(source is None):
             print("Error reading img: ",self.root+row['source'])
         
-        target = cv2.imread(self.root+row['target'])
-        target.resize(self.input_size)
+        #target = cv2.imread(self.root+row['target'])
+        target = Image.open(self.root+row['source'])
+        target = target.resize(self.input_size)
         if(target is None):
             print("Error reading img: ",self.root+row['target'])
         
