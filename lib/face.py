@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 11:14:09
+@modify date 2021-01-03 11:16:36
 @desc [description]
 """
 
@@ -53,7 +53,7 @@ class FaceVerificator(nn.Module):
         '''
         self.post_process = False if args.post_process == 0 else True
         self.mtcnn = MTCNN(image_size=self.imageShape[1], device = self.device,
-        select_largest=False, post_process=self.post_process)
+        select_largest=False, keep_all=False,post_process=self.post_process)
         
         #model args
         self.model = BioPDSN(args)
@@ -85,9 +85,8 @@ class FaceVerificator(nn.Module):
         print("Output shape: ",output.shape)
         for element in output:
             print("output element type: ",type(element))
-            prit("output element shape: ",element.shape)
+            print("output element shape: ",element.shape)
             
-        
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
         #Faces detection
