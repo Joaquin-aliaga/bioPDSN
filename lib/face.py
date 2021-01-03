@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 22:59:05
+@modify date 2021-01-03 10:46:05
 @desc [description]
 """
 
@@ -99,7 +99,7 @@ class FaceVerificator(nn.Module):
         self.testDF = pd.read_pickle(self.dfPath)
         root = os.getcwd()+'/lib/data/'
         print("Dataset shape:",self.testDF.shape)
-        self.testDF = FaceDataset(self.testDF,root,input_size=[1280,960])
+        self.testDF = FaceDataset(self.testDF,root,input_size=(1280,960,3))
 
     def test_dataloader(self):
         return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
