@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 11:16:36
+@modify date 2021-01-03 11:18:16
 @desc [description]
 """
 
@@ -85,7 +85,8 @@ class FaceVerificator(nn.Module):
         print("Output shape: ",output.shape)
         for element in output:
             print("output element type: ",type(element))
-            print("output element shape: ",element.shape)
+            if element is not None:
+                print("output element shape: ",element.shape)
             
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
