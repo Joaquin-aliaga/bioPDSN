@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 11:18:16
+@modify date 2021-01-03 12:12:22
 @desc [description]
 """
 
@@ -67,51 +67,48 @@ class FaceVerificator(nn.Module):
         self.prepare_data()
         self.dataloader = self.test_dataloader()
 
-    def get_face(self,img):
-        print("Img shape: ",img.shape)
-        output = []
-        #first need to detect if there is a face
+    def get_faces(self,img):
         detect_face,prob = self.mtcnn.detect(img)
-        print("Detect face type: ",type(detect_face))
-        print("Detect face shape: ",detect_face.shape)
+        #batch case
+        output = []
         for i in range(detect_face.shape[0]):
-            print("element face type: ",type(detect_face[i]))
             if detect_face[i] is not None:
-                print("element face shape: ",detect_face[i].shape)
                 output.append(self.mtcnn(img[i]))
             else:
                 output.append(None)
-        output = np.array(output)
-        print("Output shape: ",output.shape)
-        for element in output:
-            print("output element type: ",type(element))
-            if element is not None:
-                print("output element shape: ",element.shape)
-            
-        #img is a torch.tensor with shape [N,C,H,W]
-        #mtcnn needs [N,H,W,C]
-        #Faces detection
         return output
         
     def get_embeddings(self,source,target):
-        source = self.get_face(source)
-        target = self.get_face(target)
+        sources = self.get_face(source)
+        targets = self.get_face(target)
+        #sources and targets are list with len = batch_size
+
+        source_output = []
+        target_output = []
+        for source,target in zip(sources,targets):
+            if source is not None and target is not None:
+                #source ant target are torch.Tensor with shape [3,112,112]                 
+                _, _, fc, fc_occ = self.model(source,target)
+                source_output.append(fc)
+                target_output.append(fc_occ)
+            else:
+                source_output.append(None)
+                target_output.append(None)
         
-        source = ToTensor(source)
-        target = ToTensor(target)
-        print("Source type inside get embeddings: ",type(source))
-        print("Target type inside get embeddings: ",type(source))
-
-
-        _, _, fc, fc_occ = self.model(source,target)
-            
-        return fc, fc_occ
+        return source_output,target_output
         
     #return face verification confidence
     def forward(self,source,target):
-        emb_source, emb_target = self.get_embeddings(source,target)
+        #source and target embeddings are list of len = batch
+        embeddings_source, embeddings_target = self.get_embeddings(source,target)
 
-        sim = self.cos_sim(emb_source,emb_target)
+        sims = []
+        for embedding_s,embedding_t in zip(embeddings_source,embeddings_source):
+            if embedding_s is not None and embedding_t is not None:
+                sim = self.cos_sim(embedding_s,embedding_t)
+            else:
+                sim = 0
+            sims.append(sim)
         return sim
 
     def prepare_data(self):
@@ -128,10 +125,6 @@ class FaceVerificator(nn.Module):
         with torch.set_grad_enabled(False):
         
             for batch_idx,batch in enumerate(tqdm(self.dataloader,desc="Running test")):
-                print("Batch type: ",type(batch))
-                #print("Batch size: ",batch.size)
-                # Transfer to GPU
-                #batch = batch.to(self.device)
                 step_output = self.test_step(batch,batch_idx)
                 self.output = pd.concat([self.output,step_output])
             
@@ -140,9 +133,6 @@ class FaceVerificator(nn.Module):
     def test_step(self, batch, batch_idx):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         sources_path, targets_path = batch['source_path'], batch['target_path']
-
-        print("Sources type: ",type(sources))
-        print("Sources shape: ",sources.shape)
 
         sims = self(sources,targets)
 
