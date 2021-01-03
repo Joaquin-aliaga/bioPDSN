@@ -2,11 +2,12 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-29 17:42:20
-@modify date 2021-01-02 21:49:31
+@modify date 2021-01-02 21:52:06
 @desc [description]
 """
 import pandas as pd
 from tqdm import tqdm
+import cv2
 
 def concat_dataframes(root,path_pos,path_neg):
     path_pos = root+path_pos
