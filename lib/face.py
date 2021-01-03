@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 20:23:46
+@modify date 2021-01-02 21:19:55
 @desc [description]
 """
 
@@ -75,7 +75,7 @@ class FaceVerificator(nn.Module):
     def get_embeddings(self,source,target):
         source = self.get_face(source)
         target = self.get_face(target)
-
+        
         source = ToTensor(source)
         target = ToTensor(target)
 
@@ -101,6 +101,9 @@ class FaceVerificator(nn.Module):
         return DataLoader(self.testDF, batch_size=self.batch_size, num_workers=self.num_workers,drop_last=False)
 
     def test(self):
+
+        row = self.dataloader[0]
+        print("first row type: ",type(row))
         with torch.set_grad_enabled(False):
         
             for batch_idx,batch in enumerate(tqdm(self.dataloader,desc="Running test")):
