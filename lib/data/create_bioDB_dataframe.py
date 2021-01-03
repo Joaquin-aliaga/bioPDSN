@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-29 17:42:20
-@modify date 2021-01-02 21:52:06
+@modify date 2021-01-02 23:42:04
 @desc [description]
 """
 import pandas as pd
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     pos_easy = 'positivos_faciles/'
     neg_easy = 'negativos_faciles/'
-
+    '''
     print("Creating easy examples dataframe")
     dataframe = concat_dataframes(root,pos_easy,neg_easy)
     clean_dataframe(dataframe)
@@ -69,6 +69,7 @@ if __name__ == "__main__":
 
     print("Creating hard examples dataframe")
     dataframe = concat_dataframes(root,pos_hard,neg_hard)
+    clean_dataframe(dataframe)
     name = './'+root+'hard_dataframe.pickle'
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
@@ -78,6 +79,7 @@ if __name__ == "__main__":
 
     print("Creating masked dataframe")
     dataframe = concat_dataframes(root,pos_mask,neg_mask)
+    clean_dataframe(dataframe)
     name = './'+root+'mask_dataframe.pickle'
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
@@ -87,8 +89,9 @@ if __name__ == "__main__":
 
     print("Creating non-masked dataframe")
     dataframe = concat_dataframes(root,pos_nonmask,neg_nonmask)
+    clean_dataframe(dataframe)
     name = './'+root+'nonmask_dataframe.pickle'
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
-    '''
+
     print("Dataframes creation finished!.")

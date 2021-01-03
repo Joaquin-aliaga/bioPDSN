@@ -29,8 +29,6 @@ class FaceDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        print("Source path: ",self.root+row['source'])
-        print("Target path: ",self.root+row['target'])
         source = cv2.imread(self.root+row['source']).resize(self.input_size)
         if(source is None):
             print("Error reading img: ",self.root+row['source'])

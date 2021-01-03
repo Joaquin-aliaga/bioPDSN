@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 21:24:00
+@modify date 2021-01-02 22:59:05
 @desc [description]
 """
 
@@ -67,6 +67,10 @@ class FaceVerificator(nn.Module):
         self.dataloader = self.test_dataloader()
 
     def get_face(self,img):
+        output = []
+        #first need to detect if there is a face
+        detect_face,prob = self.mtcnn.detect(img)
+        
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
         #Faces detection
