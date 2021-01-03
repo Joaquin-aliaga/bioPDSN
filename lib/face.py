@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-02 21:19:55
+@modify date 2021-01-02 21:24:00
 @desc [description]
 """
 
@@ -102,8 +102,6 @@ class FaceVerificator(nn.Module):
 
     def test(self):
 
-        row = self.dataloader[0]
-        print("first row type: ",type(row))
         with torch.set_grad_enabled(False):
         
             for batch_idx,batch in enumerate(tqdm(self.dataloader,desc="Running test")):
