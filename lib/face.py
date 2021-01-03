@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 11:07:13
+@modify date 2021-01-03 11:09:59
 @desc [description]
 """
 
@@ -18,6 +18,7 @@ from tqdm import tqdm
 #from sklearn.metrics import accuracy_score
 
 import pandas as pd
+import numpy as np
 
 import torch
 import torch.nn as nn
