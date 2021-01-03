@@ -2,10 +2,11 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-29 17:42:20
-@modify date 2021-01-01 16:56:45
+@modify date 2021-01-02 21:49:31
 @desc [description]
 """
 import pandas as pd
+from tqdm import tqdm
 
 def concat_dataframes(root,path_pos,path_neg):
     path_pos = root+path_pos
@@ -34,6 +35,19 @@ def concat_dataframes(root,path_pos,path_neg):
 
     return concat
 
+def clean_dataframe(df):
+    print("Initial shape:",df.shape)
+    for i in tqdm(range(df.shape[0]),desc="Cleaning dataframe"):
+        row = df.iloc[i]
+        source = cv2.imread(row.source)
+        target = cv2.imread(row.target)
+        if(source is None or target is None):
+            print("Error with source: ",source)
+            print("Error with target:" ,target)
+            df.drop([i],axis=0,inplace=True)
+    print("Final shape:",df.shape)
+            
+
 if __name__ == "__main__":
     
     root = 'BioDBv3/'
@@ -43,10 +57,12 @@ if __name__ == "__main__":
 
     print("Creating easy examples dataframe")
     dataframe = concat_dataframes(root,pos_easy,neg_easy)
+    clean_dataframe(dataframe)
     name = './'+root+'easy_dataframe.pickle'
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
 
+    '''
     pos_hard = 'positivos_dificiles/'
     neg_hard = 'negativos_dificiles/'
 
@@ -73,5 +89,5 @@ if __name__ == "__main__":
     name = './'+root+'nonmask_dataframe.pickle'
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
-
+    '''
     print("Dataframes creation finished!.")
