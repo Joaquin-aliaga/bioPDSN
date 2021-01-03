@@ -16,7 +16,7 @@ class FaceDataset(Dataset):
         super(FaceDataset,self).__init__()
         self.dataFrame = dataFrame
         self.root = root
-
+        self.input_size = input_size
         self.transformations = Compose([
             ToPILImage(),
             Resize((input_size[0], input_size[1])),
@@ -27,8 +27,8 @@ class FaceDataset(Dataset):
             raise NotImplementedError('slicing is not supported')
         
         row = self.dataFrame.iloc[key]
-        source = cv2.imread(self.root+row['source'])
-        target = cv2.imread(self.root+row['target'])
+        source = cv2.imread(self.root+row['source']).resize(self.input_size)
+        target = cv2.imread(self.root+row['target']).resize(self.input_size)
         return {
             'source_path' : row['source'],
             'target_path' : row['target'],
