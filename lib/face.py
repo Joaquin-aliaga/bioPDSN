@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 18:16:13
+@modify date 2021-01-03 19:13:44
 @desc [description]
 """
 
@@ -40,7 +40,13 @@ class FaceVerificator(nn.Module):
 
         #CosineSimilarity function
         self.cos_sim = nn.CosineSimilarity()
-    
+
+        #transformations
+        self.transformations = Compose([
+            ToPILImage(),
+            ToTensor(),
+        ])
+        
         #mtcnn args
         self.imageShape = [int(x) for x in args.input_size.split(',')]
         '''
@@ -68,6 +74,7 @@ class FaceVerificator(nn.Module):
         self.dataloader = self.test_dataloader()
 
     def get_faces(self,img):
+        print("Img type:", type(img))
         detect_face,prob = self.mtcnn.detect(img)
         output = []
         for i in range(detect_face.shape[0]):
@@ -86,7 +93,10 @@ class FaceVerificator(nn.Module):
         target_output = []
         for source,target in zip(sources,targets):
             if source is not None and target is not None:
-                #source ant target are torch.Tensor with shape [3,112,112]                 
+                #source ant target are torch.Tensor with shape [3,112,112] 
+                #use same transformations as used in training
+                source = self.transformations(source)
+                target = self.transformations(target)                
                 _, _, fc, fc_occ = self.model(source,target)
                 source_output.append(fc)
                 target_output.append(fc_occ)
