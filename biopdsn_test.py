@@ -4,6 +4,7 @@ import argparse
 import torch
 from pytorch_lightning import Trainer
 from pathlib import Path
+import os
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Params for face verification test')
@@ -43,6 +44,9 @@ if __name__ == '__main__':
     
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 
+    test_folder = './test'
+    if not os.path.exists(test_folder):
+        os.mkdir(test_folder)
     # CUDA for PyTorch
     use_cuda = torch.cuda.is_available()
     args.device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -57,7 +61,7 @@ if __name__ == '__main__':
     print("Output type: ",type(output))
     print("Output shape: ",output.shape)
 
-    dfName = './test/{}_outputs.pickle'.format(args.test_database)
+    dfName = test_folder+'/{}_outputs.pickle'.format(args.test_database)
     print(f'saving Dataframe to: {dfName}')
     output.to_pickle(dfName)
     
