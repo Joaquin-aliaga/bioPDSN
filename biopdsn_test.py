@@ -49,7 +49,7 @@ if __name__ == '__main__':
     if not os.path.exists(test_folder):
         os.mkdir(test_folder)
     #make model results folder
-    if not os.path.exist(test_folder+'/'+args.model):
+    if not os.path.exists(test_folder+'/'+args.model):
         os.mkdir(test_folder+'/'+args.model)
     
     # CUDA for PyTorch
