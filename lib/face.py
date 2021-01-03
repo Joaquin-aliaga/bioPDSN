@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 10:52:58
+@modify date 2021-01-03 10:54:37
 @desc [description]
 """
 
@@ -74,7 +74,7 @@ class FaceVerificator(nn.Module):
         print("Detect face shape: ",detect_face.shape)
         for element in detect_face:
             print("element face type: ",type(element))
-            print("element face shape: ",element.shape)
+            #print("element face shape: ",element.shape)
             
         
         #img is a torch.tensor with shape [N,C,H,W]
