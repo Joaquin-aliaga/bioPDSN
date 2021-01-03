@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 12:16:26
+@modify date 2021-01-03 12:40:38
 @desc [description]
 """
 
@@ -108,7 +108,7 @@ class FaceVerificator(nn.Module):
             else:
                 sim = 0
             sims.append(sim)
-        return sim
+        return sims
 
     def prepare_data(self):
         self.testDF = pd.read_pickle(self.dfPath)
