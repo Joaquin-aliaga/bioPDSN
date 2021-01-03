@@ -45,7 +45,7 @@ class FaceDataset(Dataset):
             'source': source,
             'target': target,
             #'negative': self.transformations(negative),
-            'class': tensor([row['id_class']], dtype=long) # pylint: disable=not-callable
+            'class': float(row['id_class']) # pylint: disable=not-callable
         }
     
     def __len__(self):

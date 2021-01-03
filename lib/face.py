@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 12:40:38
+@modify date 2021-01-03 15:24:12
 @desc [description]
 """
 
@@ -104,9 +104,10 @@ class FaceVerificator(nn.Module):
         sims = []
         for embedding_s,embedding_t in zip(embeddings_source,embeddings_target):
             if embedding_s is not None and embedding_t is not None:
-                sim = self.cos_sim(embedding_s,embedding_t)
+                #get the restulting similarity (float)
+                sim = self.cos_sim(embedding_s,embedding_t).item()
             else:
-                sim = 0
+                sim = 0.0
             sims.append(sim)
         return sims
 
@@ -138,7 +139,6 @@ class FaceVerificator(nn.Module):
         step_output = pd.DataFrame()
 
         for (source_path,target_path,label,sim) in zip(sources_path,targets_path,labels,sims):
-
             step_output = step_output.append({
                 'source': source_path,
                 'target': target_path,
