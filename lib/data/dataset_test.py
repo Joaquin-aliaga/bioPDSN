@@ -32,7 +32,12 @@ class FaceDataset(Dataset):
         print("Source path: ",self.root+row['source'])
         print("Target path: ",self.root+row['target'])
         source = cv2.imread(self.root+row['source']).resize(self.input_size)
+        if(source is None):
+            print("Error reading img: ",self.root+row['source'])
         target = cv2.imread(self.root+row['target']).resize(self.input_size)
+        if(target is None):
+            print("Error reading img: ",self.root+row['target'])
+        
         return {
             'source_path' : row['source'],
             'target_path' : row['target'],
