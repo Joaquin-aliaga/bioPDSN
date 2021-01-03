@@ -37,6 +37,10 @@ Face verification system for people wearing masks, based on Pairwise Differentia
 ## Train Triplet Loss
 1. run `python biopdsn_train_triplet.py --train_database {"CASIA" or "RMFD"}`
 
+## Test
+1. First you need to put your images inside /lib/data/your-images
+2. Second you need to create a dataframe that contains 'source' (source_path), 'target' (target_path) and 'class' (1/positive 0/negative pair) and save that dataframe inside lib/data with <some_name>_dataframe.pickle
+3. run `python test.py --test_database "<some_name>" --model ["RMFD-PDSN" or "RMFD-TRIPLET" or "CASIA-PDSN" or "CASIA-TRIPLET"] -b 64 -num_workers 8`
 
 ### Usefull guides
 * [Create VM instance Google Cloud Platform](https://cloud.google.com/ai-platform/deep-learning-vm/docs/pytorch_start_instance)
