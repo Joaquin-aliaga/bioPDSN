@@ -32,8 +32,8 @@ class FaceDataset(Dataset):
         return {
             'source_path' : row['source'],
             'target_path' : row['target'],
-            'source': self.transformations(source),
-            'target': self.transformations(target),
+            'source': source,
+            'target': target,
             #'negative': self.transformations(negative),
             'class': tensor([row['id_class']], dtype=long), # pylint: disable=not-callable
         }
