@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 12:12:22
+@modify date 2021-01-03 12:16:26
 @desc [description]
 """
 
@@ -69,7 +69,6 @@ class FaceVerificator(nn.Module):
 
     def get_faces(self,img):
         detect_face,prob = self.mtcnn.detect(img)
-        #batch case
         output = []
         for i in range(detect_face.shape[0]):
             if detect_face[i] is not None:
@@ -79,8 +78,8 @@ class FaceVerificator(nn.Module):
         return output
         
     def get_embeddings(self,source,target):
-        sources = self.get_face(source)
-        targets = self.get_face(target)
+        sources = self.get_faces(source)
+        targets = self.get_faces(target)
         #sources and targets are list with len = batch_size
 
         source_output = []
@@ -103,7 +102,7 @@ class FaceVerificator(nn.Module):
         embeddings_source, embeddings_target = self.get_embeddings(source,target)
 
         sims = []
-        for embedding_s,embedding_t in zip(embeddings_source,embeddings_source):
+        for embedding_s,embedding_t in zip(embeddings_source,embeddings_target):
             if embedding_s is not None and embedding_t is not None:
                 sim = self.cos_sim(embedding_s,embedding_t)
             else:
