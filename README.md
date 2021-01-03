@@ -1,6 +1,14 @@
 # bioPDSN
 Face verification system for people wearing masks, based on Pairwise Differential Siamese Network [paper](https://arxiv.org/abs/1908.06290)
 
+- [Clone repo](#clone-repo)
+- [Install dependencies](#install-dependencies)
+- [Prepare data](#prepare-data)
+- [Prepare pretrained model](#prepare-pretained-model)
+- [Train](#train)
+- [Test](#test)
+
+
 ## System
 * Ubuntu 18
 * Python 3.6
@@ -8,9 +16,6 @@ Face verification system for people wearing masks, based on Pairwise Differentia
 
 ## Clone repo
 `git clone https://github.com/Joaquin-aliaga/bioPDSN.git`
-
-- [Install dependencies](#install-dependencies)
-- [Train Triplet Loss](#train-triplet-loss)
 
 ## Install dependencies
 * `pip install -r requirements.txt` (not recommended, you may have memory issues depending on your system)
@@ -31,13 +36,14 @@ Face verification system for people wearing masks, based on Pairwise Differentia
 ## Prepare pretrained model
 1. Download LResNet50E-IR pretrained from [insightface Model-Zoo](https://github.com/deepinsight/insightface/wiki/Model-Zoo) and put it in ./weights
 
-## Train PDSN Loss
+## Train
+### Train PDSN Loss
 1. run `python biopdsn_train.py --train_database {"CASIA" or "RMFD"}`
 
-## Train Contrastive Loss (not implemented yet)
+### Train Contrastive Loss (not implemented yet)
 1. run `python biopdsn_train_contrastive.py --train_database {"CASIA" or "RMFD"}`
 
-## Train Triplet Loss
+### Train Triplet Loss
 1. run `python biopdsn_train_triplet.py --train_database {"CASIA" or "RMFD"}`
 
 ## Test
