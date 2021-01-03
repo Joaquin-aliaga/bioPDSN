@@ -9,8 +9,8 @@ Face verification system for people wearing masks, based on Pairwise Differentia
 ## Clone repo
 `git clone https://github.com/Joaquin-aliaga/bioPDSN.git`
 
-- [Install dependencies](#install dependencies)
-- [Train Triplet Loss](#train triplet loss)
+- [Install dependencies](#install-dependencies)
+- [Train Triplet Loss](#train-triplet-loss)
 
 ## Install dependencies
 * `pip install -r requirements.txt` (not recommended, you may have memory issues depending on your system)
