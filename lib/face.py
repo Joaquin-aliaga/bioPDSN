@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 15:24:12
+@modify date 2021-01-03 16:44:49
 @desc [description]
 """
 
@@ -142,7 +142,7 @@ class FaceVerificator(nn.Module):
             step_output = step_output.append({
                 'source': source_path,
                 'target': target_path,
-                'class': label,
+                'class': label.item(),
                 'similarity': sim
 
             }, ignore_index=True)

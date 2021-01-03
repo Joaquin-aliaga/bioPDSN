@@ -44,9 +44,14 @@ if __name__ == '__main__':
     
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 
+    #make test folder
     test_folder = './test'
     if not os.path.exists(test_folder):
         os.mkdir(test_folder)
+    #make model results folder
+    if not os.path.exist(test_folder+'/'+args.model):
+        os.mkdir(test_folder+'/'+args.model)
+    
     # CUDA for PyTorch
     use_cuda = torch.cuda.is_available()
     args.device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -61,7 +66,7 @@ if __name__ == '__main__':
     print("Output type: ",type(output))
     print("Output shape: ",output.shape)
 
-    dfName = test_folder+'/{}_outputs.pickle'.format(args.test_database)
+    dfName = test_folder+'/{}/{}_outputs.pickle'.format(args.model,args.test_database)
     print(f'saving Dataframe to: {dfName}')
     output.to_pickle(dfName)
     
