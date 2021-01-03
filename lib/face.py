@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 11:09:59
+@modify date 2021-01-03 11:14:09
 @desc [description]
 """
 
@@ -75,20 +75,23 @@ class FaceVerificator(nn.Module):
         print("Detect face type: ",type(detect_face))
         print("Detect face shape: ",detect_face.shape)
         for i in range(detect_face.shape[0]):
-            #print("element face type: ",type(detect_face[i]))
+            print("element face type: ",type(detect_face[i]))
             if detect_face[i] is not None:
-                #print("element face shape: ",detect_face[i].shape)
+                print("element face shape: ",detect_face[i].shape)
                 output.append(self.mtcnn(img[i]))
             else:
                 output.append(None)
         output = np.array(output)
         print("Output shape: ",output.shape)
+        for element in output:
+            print("output element type: ",type(element))
+            prit("output element shape: ",element.shape)
             
         
         #img is a torch.tensor with shape [N,C,H,W]
         #mtcnn needs [N,H,W,C]
         #Faces detection
-        return self.mtcnn(img)
+        return output
         
     def get_embeddings(self,source,target):
         source = self.get_face(source)
@@ -96,6 +99,8 @@ class FaceVerificator(nn.Module):
         
         source = ToTensor(source)
         target = ToTensor(target)
+        print("Source type inside get embeddings: ",type(source))
+        print("Target type inside get embeddings: ",type(source))
 
 
         _, _, fc, fc_occ = self.model(source,target)
