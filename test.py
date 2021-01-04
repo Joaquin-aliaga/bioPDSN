@@ -63,7 +63,6 @@ if __name__ == '__main__':
     output = model.test()
     print("Test finished!")
 
-    print("Output type: ",type(output))
     print("Output shape: ",output.shape)
 
     dfName = test_folder+'/{}/{}_outputs.pickle'.format(args.model,args.test_database)
