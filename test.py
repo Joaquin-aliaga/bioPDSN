@@ -1,4 +1,5 @@
 from lib.face import FaceVerificator
+from lib.bioapi import FaceBio
 
 import argparse
 import torch
@@ -21,7 +22,7 @@ if __name__ == '__main__':
 
     #model args
 
-    parser.add_argument("-model","--model",choices = ["RMFD-PDSN","RMFD-TRIPLET","CASIA-PDSN","CASIA-TRIPLET"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
+    parser.add_argument("-model","--model",choices = ["RMFD-PDSN","RMFD-TRIPLET","CASIA-PDSN","CASIA-TRIPLET","BIOAPI"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
@@ -57,7 +58,12 @@ if __name__ == '__main__':
     args.device = torch.device("cuda:0" if use_cuda else "cpu")
     torch.backends.cudnn.benchmark = True
 
-    model = FaceVerificator(args).to(args.device)
+    if(args.model == "BIOAPI"):
+        model = FaceBio(args)
+    else:
+        model = FaceVerificator(args)
+        
+    model.to(args.device)
 
     #model.test() should return a DF with scores
     output = model.test()

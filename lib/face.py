@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-03 21:18:36
+@modify date 2021-01-04 23:12:17
 @desc [description]
 """
 
@@ -96,9 +96,9 @@ class FaceVerificator(nn.Module):
                 #use same transformations as used in training
                 source = self.transformations(source)
                 target = self.transformations(target)                
-                _, _, fc, fc_occ = self.model(source,target)
-                source_output.append(fc)
-                target_output.append(fc_occ)
+                _, _, embedding_source, embedding_target = self.model(source,target)
+                source_output.append(embedding_source)
+                target_output.append(embedding_target)
             else:
                 source_output.append(None)
                 target_output.append(None)
