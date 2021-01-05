@@ -119,8 +119,9 @@ class FaceBio(nn.Module):
         target_output = []
         for source,target in zip(sources,targets):
             if source is not None and target is not None:
-                embeddings_source = self.resnet(source)
-                embeddings_target = self.resnet(target)
+                #unsqueeze: add one dimention
+                embeddings_source = self.resnet(source.unsqueeze_(0))
+                embeddings_target = self.resnet(target.unsqueeze_(0))
                 
                 source_output.append(embeddings_source)
                 target_output.append(embeddings_target)
