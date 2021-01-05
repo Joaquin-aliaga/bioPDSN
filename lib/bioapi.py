@@ -2,7 +2,7 @@ from facenet_pytorch import MTCNN, InceptionResnetV1
 import torch
 import torch.nn as nn
 import os
-from fastai.vision import *
+#from fastai.vision import *
 import torchvision.transforms as T
 from lib.data.dataset_test import FaceDataset
 from tqdm import tqdm
@@ -85,7 +85,7 @@ class FaceBio(nn.Module):
         sources, targets, labels = batch['source'], batch['target'],batch['class']
         sources_path, targets_path = batch['source_path'], batch['target_path']
 
-        sims = self.compare_faces(sources,targets)
+        sims = self(sources,targets)
 
         step_output = pd.DataFrame()
 
@@ -142,157 +142,4 @@ class FaceBio(nn.Module):
             else:
                 sim = 0.0
             sims.append(sim)
-        return sims    
-    
-    def get_face_detections(self, image):
-        face_detection = FaceDetection()
-        
-        face_detection.rotated = False
-        width, height = image.size
-        if(width > height):
-            image = image.rotate(90)
-            face_detection.rotated = True
-        
-        #Faces detection
-        face_matches, probs = self.mtcnn.detect(image)
-
-        face_detection.detections = []
-        face_detection.face_count = 0
-        
-        if(face_matches is not None):
-            face_detection.face_count = face_matches.shape[0]
-            for face in face_matches:
-                if(face_detection.rotated):
-                    detection = {
-                            'bounding_box': {
-                                'height': int(face[2] - face[0]),
-                                'left': int(face[0]),
-                                'top': int(face[1]),
-                                'width': int(face[3] - face[1])
-                            },
-                    }
-                    face_detection.detections.append(detection)
-                else:
-                    detection = {
-                            'bounding_box': {
-                                'height': int(face[3] - face[1]),
-                                'left': int(face[0]),
-                                'top': int(face[1]),
-                                'width': int(face[2] - face[0])
-                            },
-                    }
-                    face_detection.detections.append(detection)
-
-        #Face Mask Detection
-        img_tensor = T.ToTensor()(image)
-        pred_class, pred_idx, outputs = self.face_mask_learn.predict(Image(img_tensor))
-
-        if(str(pred_class) == 'mask'):
-            face_detection.face_mask = True
-        else:
-            face_detection.face_mask = False
-        
-        
-
-        return face_detection, image
-
-
-
-    
-    def compare_faces(self, source_image, target_image):  
-        #Faces detection
-        face_matches, probs = self.mtcnn.detect(target_image)
-
-        if(face_matches is not None):
-        
-            aligned_source = []
-            aligned_target = []
-            x_aligned, prob = self.mtcnn(source_image, return_prob=True)
-            if x_aligned is not None:
-                aligned_source.append(x_aligned[0])
-
-                x_aligned, prob = self.mtcnn(target_image, return_prob=True)
-                
-                if x_aligned is not None:
-                    for x in x_aligned:
-                        aligned_target.append(x)
-
-
-                aligned_source = torch.stack(aligned_source).to(self.device)
-                aligned_target = torch.stack(aligned_target).to(self.device)
-
-                #Person embeddings
-                embeddings_source = self.resnet(aligned_source).detach().cpu()
-                embeddings_target = self.resnet(aligned_target).detach().cpu()
-
-                #Calculate score
-                dists = [[(e1 - e2).norm().item() for e2 in embeddings_target] for e1 in embeddings_source]
-                
-                min_index = dists[0].index(min(dists[0]))
-
-                score = dists[0][min_index]
-
-                #Face Mask Detection
-                img_tensor = T.ToTensor()(target_image)
-                pred_class, pred_idx, outputs = self.face_mask_learn.predict(Image(img_tensor))
-
-                if(str(pred_class) == 'mask'):
-                    face_mask = True
-                else:
-                    face_mask = False
-                
-                #AntiSpoofing Detection
-                pred_class, pred_idx, outputs = self.spoofing_learn.predict(Image(img_tensor))
-
-                quality = outputs.numpy()[0]#Score entre 0 y 1
-
-                #print(quality)
-
-                verification_response = {
-                        'bounding_box': {
-                            'height': int(face_matches[min_index][3] - face_matches[min_index][1]),
-                            'left': int(face_matches[min_index][0]),
-                            'top': int(face_matches[min_index][1]),
-                            'width': int(face_matches[min_index][2] - face_matches[min_index][0])
-                        },
-                        'similarity': score,
-                        'quality': str(quality),
-                        'face_count': face_matches.shape[0],
-                        'face_mask': face_mask,
-                        'status': 'Ok',
-                }
-            else:
-                verification_response = {
-                    'bounding_box': None,
-                    'similarity': None,
-                    'quality': None,
-                    'face_count': 0,
-                    'face_mask': None,
-                    'status': 'Person face (source image) not found'
-                }
-
-        else:
-            verification_response = {
-                    'bounding_box': None,
-                    'similarity': None,
-                    'quality': None,
-                    'face_count': 0,
-                    'face_mask': None,
-                    'status': 'Person face (target image) not found'
-            }
-        
-        return verification_response
-    
-    def detect_faces(self, image):  
-        #working with rotated selfies
-        face_detection = self.get_face_detections(image)[0]
-        
-        detect_response = {
-            'detections': face_detection.detections, 
-            'face_count': face_detection.face_count,
-            'face_mask': face_detection.face_mask,
-        }
-
-        
-        return detect_response
-
+        return sims
