@@ -53,7 +53,8 @@ class FaceBio(nn.Module):
             device=self.device, keep_all=False,select_largest=False
         )
 
-        self.resnet = InceptionResnetV1(pretrained='vggface2').eval().to(self.device)
+        self.resnet = InceptionResnetV1(pretrained='vggface2').to(self.device)
+        self.resnet.eval()
         #self.face_mask_learn = load_learner('./model', 'export.pkl')
         #self.spoofing_learn = load_learner('./model', 'spoofing_model.pkl')
 
@@ -120,8 +121,8 @@ class FaceBio(nn.Module):
         for source,target in zip(sources,targets):
             if source is not None and target is not None:
                 #unsqueeze: add one dimention
-                embeddings_source = self.resnet(source.unsqueeze_(0))
-                embeddings_target = self.resnet(target.unsqueeze_(0))
+                embeddings_source = self.resnet(source.unsqueeze_(0).cuda())
+                embeddings_target = self.resnet(target.unsqueeze_(0).cuda())
                 
                 source_output.append(embeddings_source)
                 target_output.append(embeddings_target)
