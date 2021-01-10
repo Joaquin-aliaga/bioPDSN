@@ -39,7 +39,7 @@ class Resnet(nn.Module):
     
     return net
   
-  def forward(self,batch):
+  def get_embedding(self,batch):
 
     if(len(batch.shape)>3): #batch with more than 1 element
       inputBlob = np.zeros( (self.batch_size, self.imageShape[0], self.imageShape[1], self.imageShape[2]) )
@@ -58,3 +58,9 @@ class Resnet(nn.Module):
     self.net.model.forward(db, is_train=False)
     features = self.net.model.get_outputs()[0].asnumpy()
     return features
+
+  def forward(self,source,target):
+    source_embedding = self.get_embedding(source)
+    target_embedding = self.get_embedding(target)
+    #return None,None,source,target because Biopdsn return this way
+    return None,None,source_embedding,target_embedding
