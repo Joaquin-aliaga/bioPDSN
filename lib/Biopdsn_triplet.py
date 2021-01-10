@@ -109,7 +109,7 @@ class BioPDSN(pl.LightningModule):
 
     
     def get_features(self,batch):
-        features = self.resnet(batch) #type(features) = numpy ndarray
+        features = self.resnet.get_embedding(batch) #type(features) = numpy ndarray
 
         return features
 

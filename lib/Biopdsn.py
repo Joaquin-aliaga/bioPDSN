@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:31
-@modify date 2021-01-10 20:18:39
+@modify date 2021-01-10 20:45:52
 @desc [description]
 """
 
@@ -100,7 +100,7 @@ class BioPDSN(pl.LightningModule):
 
     
     def get_features(self,batch):
-        features = self.resnet(batch) #type(features) = numpy ndarray
+        features = self.resnet.get_embedding(batch) #type(features) = numpy ndarray
 
         return features
 
