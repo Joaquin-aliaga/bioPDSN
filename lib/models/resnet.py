@@ -2,6 +2,7 @@ import numpy as np
 from easydict import EasyDict as edict
 import mxnet as mx
 import torch.nn as nn
+import torch.Tensor as Tensor
 
 #Resnet50 class (Arcface model)
 class Resnet(nn.Module):
@@ -63,4 +64,4 @@ class Resnet(nn.Module):
     source_embedding = self.get_embedding(source)
     target_embedding = self.get_embedding(target)
     #return None,None,source,target because Biopdsn return this way
-    return None,None,source_embedding,target_embedding
+    return None,None,Tensor(source_embedding),Tensor(target_embedding)
