@@ -22,37 +22,54 @@ if __name__ == '__main__':
 
     #model args
 
-    parser.add_argument("-model","--model",choices = ["RMFD-PDSN","RMFD-TRIPLET","CASIA-PDSN","CASIA-TRIPLET","BIOAPI"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
+    parser.add_argument("-model","--model",choices = ["PDSN","TRIPLET","ARCFACE","BIOAPI"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
+    parser.add_argument("-train_database","--train_database",choices=["RMFD","CASIA",None],help="Which trained weights to load")
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
     parser.add_argument("-e", "--embedding_size", help="embedding size",default=512, type=int)
     parser.add_argument("-rw", "--resnet_weights", help="Path to resnet weights", default="./weights/model-r50-am-lfw/model,00",type=str)
     parser.add_argument("-post_process","--post_process",help="Whether use normalization after mtcnn (0=disable, 1=enable)",default=0,type=int)
-    
+    #parser.add_argument("-resnet_embedding","--resnet_embedding",choices=[0,1],default=0,help="Wheter use resnet embedding(1) or resnet last conv(0) as output")
+
     args = parser.parse_args()
 
-    if args.model == "RMFD-PDSN":
-        args.model_weights = "./checkpoints_pdsn_rmfd/epoch=19-val_acc_occ=0.98.ckpt"
+    #not use resnet embedding, instead use resnet last conv layer as output.
+    if args.train_database == "RMFD":
         args.num_class = 403
-    elif args.model == "RMFD-TRIPLET":
-        args.model_weights = "./checkpoints_triplet_rmfd/epoch=18-val_acc_occ=0.98.ckpt"
-        args.num_class = 403
-    elif args.model == "CASIA-PDSN":
-        args.model_weights = "./checkpoints_pdsn_CASIA/epoch=19-val_acc_occ=0.51.ckpt"
+        if args.model == "PDSN":
+            args.model_weights = "./checkpoints_pdsn_rmfd/epoch=19-val_acc_occ=0.98.ckpt"
+        elif args.model == "TRIPLET":
+            args.model_weights = "./checkpoints_triplet_rmfd/epoch=18-val_acc_occ=0.98.ckpt"
+        else:
+            print("Wrong choice of model with RMFD train database!")
+            exit(1)
+    elif args.train_database == "CASIA":
         args.num_class = 395
-    elif args.model == "CASIA-TRIPLET":
-        args.model_weights = "./checkpoints_triplet_CASIA/epoch=19-val_acc_occ=0.52.ckpt"
-        args.num_class = 395
-    
+        if args.model == "PDSN":
+            args.model_weights = "./checkpoints_pdsn_CASIA/epoch=19-val_acc_occ=0.51.ckpt"
+        elif args.model == "TRIPLET":
+            args.model_weights = "./checkpoints_triplet_CASIA/epoch=19-val_acc_occ=0.52.ckpt"
+        else:
+            print("Wrong choice of model with CASIA train database!")
+    else:
+        assert(args.model == "BIOAPI" or args.model =="ARCFACE")
+ 
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 
     #make test folder
     test_folder = './test'
     if not os.path.exists(test_folder):
         os.mkdir(test_folder)
-    #make model results folder
-    if not os.path.exists(test_folder+'/'+args.model):
-        os.mkdir(test_folder+'/'+args.model)
     
+    #make model results folder
+    if(args.model == "BIOAPI" or args.model == "ARCFACE"):
+        model_folder = args.model
+    else:
+        model_folder = "{}-{}".format(args.train_database,args.model)
+    
+    results_folder = os.path.join(test_folder,model_folder)
+    if not os.path.exists(results_folder):
+        os.mkdir(results_folder)
+
     # CUDA for PyTorch
     use_cuda = torch.cuda.is_available()
     args.device = torch.device("cuda:0" if use_cuda else "cpu")
@@ -68,8 +85,6 @@ if __name__ == '__main__':
     #model.test() should return a DF with scores
     output = model.test()
     print("Test finished!")
-
-    print("Output shape: ",output.shape)
 
     dfName = test_folder+'/{}/{}_outputs.pickle'.format(args.model,args.test_database)
     print(f'saving Dataframe to: {dfName}')

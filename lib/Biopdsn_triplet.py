@@ -109,7 +109,7 @@ class BioPDSN(pl.LightningModule):
 
     
     def get_features(self,batch):
-        features = self.resnet.get_features(batch) #type(features) = numpy ndarray
+        features = self.resnet(batch) #type(features) = numpy ndarray
 
         return features
 
@@ -123,8 +123,7 @@ class BioPDSN(pl.LightningModule):
         f_occ = torch.from_numpy(f_occ).to(self.device)
         f_neg = torch.from_numpy(f_neg).to(self.device)
         
-        # Falta terminar esto!!
-
+        
         # Begin Siamese branch
         f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
         f_diff = torch.abs(f_diff)

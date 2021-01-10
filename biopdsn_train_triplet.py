@@ -14,8 +14,9 @@ if __name__ == '__main__':
     #data args
     parser = argparse.ArgumentParser(description='Params for bioPDSN train')
     #parser.add_argument("-dfPath","--dfPath",help="Path to dataframe",type=str)
-    parser.add_argument("-train_database","--train_database",choices=['RMFD','CASIA'],type=str,help="Which Database use to train")
-
+    parser.add_argument("-train_database","--train_database",choices=['RMFD','CASIA','RMFD-CASIA'],type=str,help="Which Database use to train")
+    #RMFD-CASIA training not implemented yet
+    
     #train args
     parser.add_argument("-b","--batch_size",help="batch size", default=32,type=int)
     parser.add_argument("-num_workers","--num_workers",help="num workers", default=4, type=int)

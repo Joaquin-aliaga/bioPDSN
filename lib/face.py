@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-04 23:12:17
+@modify date 2021-01-10 20:12:55
 @desc [description]
 """
 
@@ -62,10 +62,14 @@ class FaceVerificator(nn.Module):
         select_largest=False, keep_all=False,post_process=self.post_process)
         
         #model args
-        self.model = BioPDSN(args)
-        print("Loading model weights (trained)...")
-        self.model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
-        print("Model weights loaded!")
+        if(args.model == "ARCFACE"):
+            from lib.models.resnet import Resnet
+            self.model = Resnet(args)
+        else:
+            self.model = BioPDSN(args)
+            print("Loading model weights (trained)...")
+            self.model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
+            print("Model weights loaded!")
         self.model = self.model.to(self.device)
         self.model.eval()
 
@@ -124,9 +128,6 @@ class FaceVerificator(nn.Module):
         self.testDF = pd.read_pickle(self.dfPath)
         root = os.getcwd()+'/lib/data/'
         print("Dataset shape:",self.testDF.shape)
-        #cv2 version
-        #self.testDF = FaceDataset(self.testDF,root,input_size=(1280,960,3))
-        #PIL version
         self.testDF = FaceDataset(self.testDF,root,input_size=(960,1280))
 
     def test_dataloader(self):
