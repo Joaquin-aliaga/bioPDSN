@@ -1,14 +1,13 @@
 import os
 
-from lib.Biopdsn_triplet import BioPDSN
 import argparse
-
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
-
 import torch
 
+from lib.Biopdsn_triplet import BioPDSN
+from lib.models.layer import MarginCosineProduct
 
 if __name__ == '__main__':
     #data args
@@ -32,20 +31,33 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+
     if args.train_database == 'RMFD':
         args.dfPath = "./lib/data/dataframe_negatives.pickle"
         args.num_class = 403
     elif args.train_database == 'CASIA':
         args.dfPath = "./lib/data/CASIA_dataframe_negatives.pickle"
-        args.num_class = 395 #this number may change if you create CASIA_dataframe 
+        args.num_class = 395 #this number may change if you create a new CASIA_dataframe 
                             #the number of identities is prompted when you create it.
+    elif args.train_database == 'RMFD-CASIA':
+        #RMFD-CASIA means to load RMFD trained model and train with CASIA
+        args.num_class = 403 #because the pretrained model has 403 classes
+        args.dfPath = "./lib/data/CASIA_dataframe_negatives.pickle" #we will train with CASIA
+        new_num_class = 395
+        model_weights = "./checkpoints_triplet_rmfd/epoch=18-val_acc_occ=0.98.ckpt"
     else:
         print("Wrong train database")
         exit(1)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     args.device = device
-    biopdsn = BioPDSN(args).to(device)
+    
+    model = BioPDSN(args)
+    if (args.train_database == "RMFD-CASIA"):
+        print("Loading model weights (trained)...")
+        model.load_state_dict(torch.load(model_weights)['state_dict'], strict=False)
+        model.classifier = MarginCosineProduct(args.embedding_size, new_num_class)
+    model.to(device)
 
     logger = TensorBoardLogger('triplet_{}_logs'.format(args.train_database),name="triplet_{}".format(args.train_database))
     

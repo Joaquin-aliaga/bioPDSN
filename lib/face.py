@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-10 20:12:55
+@modify date 2021-01-13 08:47:32
 @desc [description]
 """
 
@@ -70,6 +70,8 @@ class FaceVerificator(nn.Module):
             print("Loading model weights (trained)...")
             self.model.load_state_dict(torch.load(args.model_weights)['state_dict'], strict=False)
             print("Model weights loaded!")
+
+            
         self.model = self.model.to(self.device)
         self.model.eval()
 
