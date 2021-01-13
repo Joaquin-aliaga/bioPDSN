@@ -52,6 +52,9 @@ if __name__ == '__main__':
             print("Wrong choice of model with CASIA train database!")
     else:
         assert(args.model == "BIOAPI" or args.model =="ARCFACE")
+
+    if(args.model == "ARCFACE"):
+        args.backbone = args.model
  
     args.dfPath = "./lib/data/BioDBv3/{}_dataframe.pickle".format(args.test_database)
 

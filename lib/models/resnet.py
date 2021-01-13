@@ -14,7 +14,7 @@ class Resnet(nn.Module):
     self.ctx = mx.gpu() if mx.context.num_gpus() else mx.cpu()
     #self.ctx = mx.cpu()
     #self.internals = None
-    self.use_arcface = True if args.model == "ARCFACE" else False
+    self.use_arcface = True if args.backbone == "ARCFACE" else False
     self.net = self.load_feature_model()
 
   def load_feature_model(self):
