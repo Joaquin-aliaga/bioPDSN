@@ -77,7 +77,7 @@ if __name__ == '__main__':
                     logger = logger
                     )
     #find best learning rate
-    trainer.tune(biopdsn)
+    trainer.tune(model)
 
     #train
-    trainer.fit(biopdsn)
+    trainer.fit(model)
