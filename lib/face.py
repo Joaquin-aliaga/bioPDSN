@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:08
-@modify date 2021-01-14 00:41:14
+@modify date 2021-01-14 00:44:25
 @desc [description]
 """
 
@@ -140,7 +140,7 @@ class FaceVerificator(nn.Module):
         with torch.set_grad_enabled(False):
         
             for batch_idx,batch in enumerate(tqdm(self.dataloader,desc="Running test")):
-                batch = [{k: v.to(device) for k, v in dic.items()} for dic in batch]
+                #batch = [{k: v.to(self.device) for k, v in dic.items()} for dic in batch]
                 step_output = self.test_step(batch,batch_idx)
                 self.output = pd.concat([self.output,step_output])
             
