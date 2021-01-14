@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     #model args
 
-    parser.add_argument("-model","--model",choices = ["PDSN","TRIPLET","ARCFACE","BIOAPI"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
+    parser.add_argument("-model","--model",choices = ["PDSN","TRIPLET","ARCFACE","BIOAPI","RC-TRIPLET"],help="Which model weights use: [TrainDB]-[Loss]",default=None,type=str)
     parser.add_argument("-train_database","--train_database",choices=["RMFD","CASIA","RMFD-CASIA",None],help="Which trained weights to load")
     parser.add_argument("-backbone","--backbone",default="RESNET")
     parser.add_argument("-i", "--input_size", help="input size", default="3,112,112", type=str)
