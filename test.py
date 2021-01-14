@@ -94,7 +94,11 @@ if __name__ == '__main__':
     output = model.test()
     print("Test finished!")
 
-    dfName = test_folder+'/{}/{}_outputs.pickle'.format(args.model,args.test_database)
+    save_folder = test_folder+'/{}/'.format(args.model)
+    if not os.path.exists(save_folder):
+        os.makedirs(save_folder)
+    
+    dfName = save_folder+'{}_outputs.pickle'.format(args.test_database)
     print(f'saving Dataframe to: {dfName}')
     output.to_pickle(dfName)
     
