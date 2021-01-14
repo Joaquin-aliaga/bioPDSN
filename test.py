@@ -50,6 +50,10 @@ if __name__ == '__main__':
             args.model_weights = "./checkpoints_triplet_CASIA/epoch=19-val_acc_occ=0.52.ckpt"
         else:
             print("Wrong choice of model with CASIA train database!")
+            exit(1)
+    elif args.train_database == "RMFD-CASIA":
+        args.num_class = 395
+        args.model_weights = "./checkpoints_triplet_RMFD-CASIA/epoch=19-val_acc_occ=0.53.ckpt"
     else:
         assert(args.model == "BIOAPI" or args.model =="ARCFACE")
 
