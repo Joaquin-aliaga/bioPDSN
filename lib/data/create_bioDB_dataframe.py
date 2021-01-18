@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2020-12-29 17:42:20
-@modify date 2021-01-02 23:42:04
+@modify date 2021-01-18 00:54:00
 @desc [description]
 """
 import pandas as pd
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     
     pos_easy = 'positivos_faciles/'
     neg_easy = 'negativos_faciles/'
-    '''
+    
     print("Creating easy examples dataframe")
     dataframe = concat_dataframes(root,pos_easy,neg_easy)
     clean_dataframe(dataframe)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     print(f'saving Dataframe to: {name}')
     dataframe.to_pickle(name)
 
-    '''
+    
     pos_hard = 'positivos_dificiles/'
     neg_hard = 'negativos_dificiles/'
 

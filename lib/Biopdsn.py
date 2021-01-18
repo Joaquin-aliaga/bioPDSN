@@ -2,7 +2,7 @@
 @author Joaquin Aliaga Gonzalez
 @email joaliaga.g@gmail.com
 @create date 2021-01-01 17:08:31
-@modify date 2021-01-10 20:45:52
+@modify date 2021-01-18 00:53:56
 @desc [description]
 """
 
@@ -110,6 +110,8 @@ class BioPDSN(pl.LightningModule):
 
         f_clean = torch.from_numpy(f_clean).to(self.device)
         f_occ = torch.from_numpy(f_occ).to(self.device)
+
+        print("Features shape:", f_occ.shape)
 
         # Begin Siamese branch
         f_diff = torch.add(f_clean,f_occ,alpha=-1.0)
